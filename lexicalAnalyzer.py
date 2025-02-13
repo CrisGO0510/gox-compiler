@@ -72,7 +72,7 @@ def tokenize(code):
 # Agregar más funciones para manejar las demás reglas de la gramática.
 
 # Prueba
-test_code = "var x = 10;"
+test_code = "var 1x = 10;"
 tokenize(test_code)
 print("TOKEN:", tokens)
 # print("Pertenece a la gramática:" if program() else "No pertenece a la gramática")
