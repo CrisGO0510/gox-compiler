@@ -41,6 +41,20 @@
           "gox"
         ]
       }
+    ],
+    "grammars": [
+      {
+        "language": "gox",
+        "scopeName": "source.gox",
+        "path": "./syntaxes/gox.tmLanguage.json"
+      }
+    ],
+    "themes": [
+      {
+        "label": "Gox Theme",
+        "uiTheme": "vs-dark",
+        "path": "./themes/gox-color-theme.json"
+      }
     ]
   },
   "main": "./out/extension.js",

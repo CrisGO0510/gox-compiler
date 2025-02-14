@@ -1,0 +1,51 @@
+{
+  "scopeName": "source.gox",
+  "fileTypes": ["gox"],
+  "patterns": [
+    {
+      "name": "comment.line.double-slash.gox",
+      "match": "//.*"
+    },
+    {
+      "name": "comment.block.gox",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    {
+      "name": "keyword.control.gox",
+      "match": "\\b(const|var|print|return|break|continue|if|else|while|func|import)\\b"
+    },
+    {
+      "name": "storage.type.gox",
+      "match": "\\b(int|float|char|bool)\\b"
+    },
+    {
+      "name": "variable.gox",
+      "match": "[A-Za-z_][A-Za-z0-9_]*"
+    },
+    {
+      "name": "constant.numeric.integer.gox",
+      "match": "[+-]?[0-9]+"
+    },
+    {
+      "name": "string.quoted.single.gox",
+      "match": "'(?:[^'\\\\]|\\\\.)*'"
+    },
+    {
+      "name": "string.quoted.double.gox",
+      "match": "\"(?:[^\"\\\\]|\\\\.)*\""
+    },
+    {
+      "name": "constant.language.boolean.gox",
+      "match": "\\b(true|false)\\b"
+    },
+    {
+      "name": "keyword.operator.gox",
+      "match": "(==|!=|<=|>=|&&|\\|\\||[+\\-*/^<>])"
+    },
+    {
+      "name": "punctuation.separator.gox",
+      "match": "[=;(),{}]"
+    }
+  ]
+}

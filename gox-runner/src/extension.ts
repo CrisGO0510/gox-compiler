@@ -24,8 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     terminal.show();
 
-    // terminal.sendText(`python lexicalAnalyzer.py "${filePath}"`);
-    terminal.sendText(`python lexicalAnalyzer.py`);
+    terminal.sendText(`python lexicalAnalyzer.py "${filePath}"`);
   });
 
   context.subscriptions.push(disposable);
