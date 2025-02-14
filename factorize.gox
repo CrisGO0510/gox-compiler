@@ -1,5 +1,7 @@
 // Factoriza un numero en sus factores primos.
-
+/* 
+    Comentario 
+*/
 func mod(x int, y int) int {
     return x - x / y * y;
 }

@@ -1,4 +1,5 @@
 import re
+import sys
 
 tokens = []
 current_token = 0
@@ -33,46 +34,20 @@ def tokenize(code):
     token_regex = '|'.join(f'(?P<{name}>{pattern})' for name, pattern in token_specification)
     tokens = [(match.lastgroup, match.group()) for match in re.finditer(token_regex, code) if match.lastgroup != 'WHITESPACE']
 
-# def match(expected_type):
-#     global current_token
-#     if current_token < len(tokens) and tokens[current_token][0] == expected_type:
-#         current_token += 1
-#         return True
-#     return False
+# # Prueba
+# test_code = "var 1a = 10;"
+# tokenize(test_code)
+# print("TOKEN:", tokens)
 
-# def program():
-#     while statement():
-#         pass
-#     return current_token == len(tokens)
+if len(sys.argv) != 2:
+    print("Usage: python lexicalAnalyzer.py <file_path>")
+    sys.exit(1)
 
-# def statement():
-#     return assignment() or vardecl() or funcdecl() or if_stmt() or while_stmt() or control_stmt() or print_stmt()
+file_path = sys.argv[1]
 
-# def assignment():
-#     pos = current_token
-#     if match('ID') and match('OP') and match('INTEGER') and match('DELIM'):
-#         return True
-#     current_token = pos
-#     return False
+with open(file_path, 'r') as file:
+    code = file.read()
 
-# def vardecl():
-#     pos = current_token
-#     if match('KEYWORD') and match('ID') and match('DELIM'):
-#         return True
-#     current_token = pos
-#     return False
-
-# def print_stmt():
-#     pos = current_token
-#     if match('KEYWORD') and match('INTEGER') and match('DELIM'):
-#         return True
-#     current_token = pos
-#     return False
-
-# Agregar más funciones para manejar las demás reglas de la gramática.
-
-# Prueba
-test_code = "var 1x = 10;"
-tokenize(test_code)
+tokenize(code)
 print("TOKEN:", tokens)
 # print("Pertenece a la gramática:" if program() else "No pertenece a la gramática")
