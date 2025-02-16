@@ -119,10 +119,6 @@ Si prefieres usar el tema de tu elección, este es el resultado que obtendrás:
 
 ![Tema personalizado](/images/example-theme2.png)
 
-## 🛠️ Solución de Problemas Comunes
-
-- **Error al instalar la extensión**: Asegúrate de que estás usando la versión más reciente de Visual Studio Code y que tienes los permisos necesarios para instalar extensiones.
-- **El archivo `.gox` no compila correctamente**: Verifica que el archivo `.gox` esté correctamente formateado y que no tenga errores sintácticos.
 
 ## 👥 Integrantes
 
