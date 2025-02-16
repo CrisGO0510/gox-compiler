@@ -24,7 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     terminal.show();
 
-    terminal.sendText(`python lexicalAnalyzer.py "${filePath}"`);
+    const venvPython = process.platform === "win32" ? ".venv\\Scripts\\python" : ".venv/bin/python";
+    terminal.sendText(`${venvPython} tokenize_1.py "${filePath}"`);
+    
   });
 
   context.subscriptions.push(disposable);
