@@ -125,3 +125,4 @@ Si prefieres usar el tema de tu elección, este es el resultado que obtendrás:
 Este proyecto fue desarrollado por:
 
 - **Cristhian Giraldo Orozco**
+- **Jannin Milena Ramirez Piedrahita**
