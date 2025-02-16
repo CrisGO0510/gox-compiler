@@ -1,0 +1,87 @@
+
+# GOX Lexer & VSCode Extension
+
+Este proyecto es un compilador para el lenguaje `.gox`, junto con una extensión de VS Code para facilitar su ejecución y desarrollo.
+
+## 🛠️ Instalación
+
+1. Clona el repositorio:
+   ```sh
+   git clone https://github.com/CrisGO0510/gox-compiler.git
+   ```
+
+2. Instala las dependencias:
+   ```sh
+   cd gox-compiler/gox-runner
+   npm i
+   ```
+
+3. Empaqueta la extensión de VS Code:
+   ```sh
+   npx vsce package
+   ```
+
+4. Instala el paquete `.vsix` generado:
+    - Abre VS Code y presiona `Ctrl + Shift + P`.      
+    - Selecciona **Extensions: Install from VSIX**.
+
+      ![Instalar el paquete a vsc](/images/install-VSIX.png)
+
+    - Busca el paquete en la carpeta `./gox-runner` y selecciona el archivo `.vsix` generado.
+    
+      ![Buscar paquete](/images/search-VSIX.png)
+
+    - Reinicia Visual Studio Code.
+
+
+
+## 🚀 Modo de uso
+
+Con la extensión implementada, solo necesitas crear tu archivo `.gox` junto con el archivo `tokenize_1.py`, que se encuentra en el repositorio. Asegúrate de que ambos archivos estén en la misma carpeta antes de ejecutar:
+
+![Ejecución del archivo GOX](/images/run-gox-file.png)
+
+Al ejecutar, se abrirá la terminal con el analizador léxico, tokenizando el código:
+
+![Tokenización en ejecución](image.png)
+
+La salida se divide en:
+
+1. **Tokenización**:
+    ```sh
+    Token(ID, tipo, valor)
+    Token(TIPO, VALOR, N° de Línea)
+    ```
+
+2. **Captura de errores**:
+    ```sh
+    15: Caracter ilegal '%'
+    N° de Línea: ERROR
+    ```
+
+## 🎨 Tema predeterminado
+
+La extensión incluye una gramática para implementar los colores de su tema preferido. Si deseas usar el tema designado por el programa, sigue estos pasos:
+
+1. Abre la paleta de comandos (`Ctrl+Shift+P`) y selecciona **GOX: Seleccionar tema**.
+
+![Seleccionar tema GOX](/images/select-theme.png)
+
+
+El tema se verá de la siguiente forma:
+![Tema GOX predeterminado](/images/example-theme.png)
+
+
+Si prefieres usar el tema de tu elección, este es el resultado que obtendrás:
+![Tema personalizado](/images/example-theme2.png)
+
+## 🛠️ Solución de Problemas Comunes
+
+- **Error al instalar la extensión**: Asegúrate de que estás usando la versión más reciente de Visual Studio Code y que tienes los permisos necesarios para instalar extensiones.
+- **El archivo `.gox` no compila correctamente**: Verifica que el archivo `.gox` esté correctamente formateado y que no tenga errores sintácticos.
+
+## 👥 Integrantes
+
+Este proyecto fue desarrollado por:
+
+- **Cristhian Giraldo Orozco**
