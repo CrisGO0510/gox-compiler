@@ -55,7 +55,7 @@ Esto generará la carpeta `.venv`, donde se almacenarán las dependencias del pr
 #### En Windows:
 
 ```sh
-.venv\Scriptsctivate
+.venv\Scripts\activate
 ```
 
 #### En Linux/macOS:
@@ -87,7 +87,7 @@ Con la extensión implementada, solo necesitas crear tu archivo `.gox` junto con
 
 Al ejecutar, se abrirá la terminal con el analizador léxico, tokenizando el código:
 
-![Tokenización en ejecución](image.png)
+![Tokenización en ejecución](/images/tokenize.png)
 
 La salida se divide en:
 
