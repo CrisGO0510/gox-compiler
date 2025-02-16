@@ -34,6 +34,50 @@ Este proyecto es un compilador para el lenguaje `.gox`, junto con una extensión
     - Reinicia Visual Studio Code.
 
 
+## 🛠️ Instalación de dependencias en el entorno virtual (Python)
+
+### Requisitos
+
+Si tu proyecto usa un entorno virtual (`.venv`) y un archivo `requirements.txt` para gestionar dependencias, sigue estos pasos para instalar las dependencias de Python.
+
+### 1. Crear el entorno virtual
+
+Primero, crea el entorno virtual en la raíz del proyecto:
+
+```sh
+python -m venv .venv
+```
+
+Esto generará la carpeta `.venv`, donde se almacenarán las dependencias del proyecto.
+
+### 2. Activar el entorno virtual
+
+#### En Windows:
+
+```sh
+.venv\Scriptsctivate
+```
+
+#### En Linux/macOS:
+
+```sh
+source .venv/bin/activate
+```
+
+### 3. Instalar las dependencias desde `requirements.txt`
+
+Una vez activado el entorno virtual, instala las dependencias usando el archivo `requirements.txt`. Esto se puede hacer de la siguiente manera:
+
+#### En Windows y Linux/macOS:
+
+```sh
+pip install -r requirements.txt
+```
+
+### 4. Verificación
+
+Después de la instalación, las dependencias estarán disponibles dentro del entorno virtual y podrás comenzar a trabajar en el proyecto.
+
 
 ## 🚀 Modo de uso
 
