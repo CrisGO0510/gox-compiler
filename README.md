@@ -13,8 +13,11 @@ Este proyecto es un compilador para el lenguaje `.gox`, junto con una extensión
 2. Instala las dependencias:
    ```sh
    cd gox-compiler/gox-runner
-   npm i
    ```
+
+    ```sh
+    npm i
+    ```
 
 3. Empaqueta la extensión de VS Code:
    ```sh
