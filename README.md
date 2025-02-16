@@ -87,7 +87,7 @@ Con la extensión implementada, solo necesitas crear tu archivo `.gox` junto con
 
 Al ejecutar, se abrirá la terminal con el analizador léxico, tokenizando el código:
 
-![Tokenización en ejecución](/images/tokenize.png)
+![Tokenización en ejecución](/images/example-tokenize.png)
 
 La salida se divide en:
 
@@ -111,12 +111,12 @@ La extensión incluye una gramática para implementar los colores de su tema pre
 
 ![Seleccionar tema GOX](/images/select-theme.png)
 
-
 El tema se verá de la siguiente forma:
+
 ![Tema GOX predeterminado](/images/example-theme.png)
 
-
 Si prefieres usar el tema de tu elección, este es el resultado que obtendrás:
+
 ![Tema personalizado](/images/example-theme2.png)
 
 ## 🛠️ Solución de Problemas Comunes
