@@ -106,6 +106,29 @@ La salida se divide en:
     N° de Línea: ERROR
     ```
 
+## ✅ Pruebas unitarias
+
+El lexer cuenta con pruebas unitarias en `test_lexer.py`, usando unittest. Para ejecutarlas:
+```sh
+python -m unittest discover
+```
+Las pruebas verifican:
+
+- Palabras reservadas: const, var, print, return...
+
+- Identificadores: variable, _var1, a1b2c3
+
+- Números: 123, 45.67, .456, 123.
+
+- Operadores: +, -, *, /, <=, >=, ==, !=, &&, ||, ^
+
+- Símbolos misceláneos: =, ;, (, ), {, }, , ,  `
+
+- Comentarios: Se ignoran correctamente.
+
+- Errores: Caracteres ilegales (@), comentarios sin cerrar (/* ...), y comillas no cerradas ('a).
+
+
 ## 🎨 Tema predeterminado
 
 La extensión incluye una gramática para implementar los colores de su tema preferido. Si deseas usar el tema designado por el programa, sigue estos pasos:
