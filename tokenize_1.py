@@ -68,7 +68,7 @@ def tokenize(text):
                 index = end + 2
                 continue
             else:
-                print(f'{lineno}: Comentario no terminado')
+                raise ValueError(f'{lineno}: Comentario no terminado') #---
                 return
 
         # Comentarios de una línea
@@ -120,8 +120,24 @@ def tokenize(text):
             index += len(value)
             continue
 
+        # Manejo de caracteres entre comillas simples ('a', '\n', '\x41') --------
+        if text[index] == "'":
+            if index + 2 < len(text) and text[index + 2] == "'":  # Verificar si es un carácter válido
+                char_value = text[index + 1]  # Extraer el carácter
+                yield Token("CHAR", char_value, lineno)
+                index += 3  # Avanzar la comilla inicial, el carácter y la comilla final
+                continue
+            elif text[index + 1:index + 3] in ["\\n", "\\t", "\\x"]:  # Manejar escapes
+                char_value = text[index + 1:index + 3]
+                yield Token("CHAR", char_value, lineno)
+                index += 4  # Saltar la comilla inicial, la secuencia de escape y la comilla final
+                continue
+            else:
+                raise ValueError(f'{lineno}: Caracter no válido o no terminado {text[index]!r}')
+
+
         # Si llega aquí, hay un error léxico
-        print(f'{lineno}: Caracter ilegal {text[index]!r}')
+        raise ValueError(f'{lineno}: Caracter ilegal {text[index]!r}') #---
         index += 1  # Evitar bucles infinitos
         continue
 
