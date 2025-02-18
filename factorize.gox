@@ -27,12 +27,13 @@ func factorize(n int) {
     while n > 1 {
         while n / factor == 0 {
             print factor;
-            n = n / factor;
+            n = n % factor;
         }
         factor = factor + 1;
     }
 }
 
+print 'a;
 print "Ingrese un número: ";
 var num int = 56;
 factorize(num);

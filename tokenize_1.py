@@ -53,14 +53,12 @@ def tokenize(text):
     lineno = 1  # número de línea
 
     while index < len(text):
-        # Salta espacios en blanco y cuenta líneas correctamente
         if text[index].isspace():
             if text[index] == '\n':
                 lineno += 1
             index += 1
             continue
 
-        # Comentarios de bloque
         if text[index:index+2] == '/*':
             end = text.find('*/', index+2)
             if end >= 0:
@@ -68,10 +66,11 @@ def tokenize(text):
                 index = end + 2
                 continue
             else:
-                raise ValueError(f'{lineno}: Comentario no terminado') #---
-                return
+                print("[red]ERROR:[/red]", f"Comentario no terminado", lineno)
+                yield Token("ERROR", f"Comentario no terminado", lineno)
+                index += 2
+                continue
 
-        # Comentarios de una línea
         if text[index:index+2] == '//':
             end = text.find('\n', index+2)
             if end >= 0:
@@ -79,32 +78,28 @@ def tokenize(text):
                 index = end + 1
                 continue
             else:
-                return  # Fin del archivo dentro de un comentario
+                return  
 
-        # Doble símbolo (&&, ||, <=, >=, ==, !=)
         if text[index:index+2] in TOW_CHAR:
             yield Token(TOW_CHAR[text[index:index+2]], text[index:index+2], lineno)
             index += 2
             continue
 
-        # Símbolos de un solo carácter
         if text[index] in ONE_CHAR:
             yield Token(ONE_CHAR[text[index]], text[index], lineno)
             index += 1
             continue
 
-        # Identificadores y palabras reservadas
         m = NAME_PAT.match(text, index)
         if m:
             value = m.group(0)
-            index += len(value)  # Avanzamos el índice completo
+            index += len(value)
             if value in KEYWORDS:
                 yield Token(value.upper(), value, lineno)
             else:
                 yield Token('ID', value, lineno)
-            continue  # Para evitar avanzar `index` dos veces
+            continue
 
-        # Números flotantes
         m = FLOAT_PAT.match(text, index)
         if m:
             value = m.group(0)
@@ -112,7 +107,6 @@ def tokenize(text):
             index += len(value)
             continue
 
-        # Números enteros
         m = INT_PAT.match(text, index)
         if m:
             value = m.group(0)
@@ -120,26 +114,29 @@ def tokenize(text):
             index += len(value)
             continue
 
-        # Manejo de caracteres entre comillas simples ('a', '\n', '\x41') --------
         if text[index] == "'":
-            if index + 2 < len(text) and text[index + 2] == "'":  # Verificar si es un carácter válido
-                char_value = text[index + 1]  # Extraer el carácter
+            if index + 2 < len(text) and text[index + 2] == "'":
+                char_value = text[index + 1]
                 yield Token("CHAR", char_value, lineno)
-                index += 3  # Avanzar la comilla inicial, el carácter y la comilla final
+                index += 3
                 continue
-            elif text[index + 1:index + 3] in ["\\n", "\\t", "\\x"]:  # Manejar escapes
+            elif text[index + 1:index + 3] in ["\\n", "\\t", "\\x"]:
                 char_value = text[index + 1:index + 3]
                 yield Token("CHAR", char_value, lineno)
-                index += 4  # Saltar la comilla inicial, la secuencia de escape y la comilla final
+                index += 4
                 continue
             else:
-                raise ValueError(f'{lineno}: Caracter no válido o no terminado {text[index]!r}')
+                
+                print("[red]ERROR:[/red]", f"Caracter no válido o no terminado {text[index]!r}", lineno)
+                yield Token("ERROR", f"Caracter no válido o no terminado {text[index]!r}", lineno)
+                index += 1
+                continue
 
+        # Si llega aquí, es un carácter ilegal
+        print("[red]ERROR:[/red]", f"Caracter ilegal {text[index]!r}", lineno)
+        yield Token("ERROR", f"Caracter ilegal {text[index]!r}", lineno)
+        index += 1
 
-        # Si llega aquí, hay un error léxico
-        raise ValueError(f'{lineno}: Caracter ilegal {text[index]!r}') #---
-        index += 1  # Evitar bucles infinitos
-        continue
 
 def main(argv):
     if len(argv) != 2:
