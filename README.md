@@ -128,6 +128,10 @@ Las pruebas verifican:
 
 - Errores: Caracteres ilegales (@), comentarios sin cerrar (/* ...), y comillas no cerradas ('a).
 
+Ejemplo:
+
+![Ejemplo de pruebas unitarias](/images/example-unittest.png)
+
 
 ## 🎨 Tema predeterminado
 
