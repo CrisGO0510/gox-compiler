@@ -13,8 +13,11 @@ Este proyecto es un compilador para el lenguaje `.gox`, junto con una extensión
 2. Instala las dependencias:
    ```sh
    cd gox-compiler/gox-runner
-   npm i
    ```
+
+    ```sh
+    npm i
+    ```
 
 3. Empaqueta la extensión de VS Code:
    ```sh
@@ -102,6 +105,29 @@ La salida se divide en:
     15: Caracter ilegal '%'
     N° de Línea: ERROR
     ```
+
+## ✅ Pruebas unitarias
+
+El lexer cuenta con pruebas unitarias en `test_lexer.py`, usando unittest. Para ejecutarlas:
+```sh
+python -m unittest discover
+```
+Las pruebas verifican:
+
+- Palabras reservadas: const, var, print, return...
+
+- Identificadores: variable, _var1, a1b2c3
+
+- Números: 123, 45.67, .456, 123.
+
+- Operadores: +, -, *, /, <=, >=, ==, !=, &&, ||, ^
+
+- Símbolos misceláneos: =, ;, (, ), {, }, , ,  `
+
+- Comentarios: Se ignoran correctamente.
+
+- Errores: Caracteres ilegales (@), comentarios sin cerrar (/* ...), y comillas no cerradas ('a).
+
 
 ## 🎨 Tema predeterminado
 
