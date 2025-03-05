@@ -1,57 +1,151 @@
-class Program:
-    def __init__(self, statements):
-        self.statements = statements
+from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Union, List, Optional
+from enum import Enum
 
-    def __repr__(self):
-        return f'Program({self.statements})'
-    
 
+class Type(Enum):
+    INT = "int"
+    FLOAT = "float"
+    CHAR = "char"
+    BOOL = "bool"
+
+
+@dataclass
 class Assignment:
-    def __init__(self, location , expression):
-        self.location  = location 
-        self.expression  = expression 
+    location: Location
+    expression: Expression
 
-    def __repr__(self):
-        return f'Assignment({self.location }, {self.expression })'
-    
 
+@dataclass
 class Vardecl:
-    def __init__(self, id, type = None, expression = None):
-        self.type = type
-        self.expression = expression
-        self.id = id
+    id: str
+    type: Optional[Type] = None
+    expression: Optional[Expression] = field(default_factory=lambda: None)
 
 
-class IfStmt: 
-    def __init__(self, expression, if_statement = [], else_statement = []):
-        self.expression = expression
-        self.if_statement = if_statement
-        self.else_statement = else_statement
+@dataclass
+class FuncDecl:
+    imported: bool = False
+    id: str
+    parameters: Parameters
+    return_type: Type
+    statements: List[Statement]
 
 
+@dataclass
+class IfStmt:
+    expression: Expression
+    if_statement: List[Statement] = field(default_factory=list)
+    else_statement: List[Statement] = field(default_factory=list)
+
+
+@dataclass
 class WhileStmt:
-    def __init__(self, expression, statement = []):
-        self.expression = expression
-        self.statement = statement
+    expression: Expression
+    statement: List[Statement] = field(default_factory=list)
 
 
+@dataclass
 class BreakStmt:
-    def __init__(self):
-        pass
+    pass
 
 
+@dataclass
 class ContinueStmt:
-    def __init__(self):
-        pass
+    pass
 
 
+@dataclass
 class ReturnStmt:
-    def __init__(self, expression):
-        self.expression = expression
+    expression: Expression
 
 
+@dataclass
 class PrintStmt:
-    def __init__(self, expression):
-        self.expression = expression
+    expression: Expression
 
 
+@dataclass
+class Parameters:
+    id: str
+    type: Type
+    next: Optional[Parameters] = None
+
+
+@dataclass
+class Location:
+    id: Optional[str] = None
+    expression: Optional[Expression] = None
+
+    def __post_init__(self):
+        if self.id is not None and self.expression is not None:
+            raise ValueError(
+                "Location no puede tener ambos 'id' y 'expression' establecidos."
+            )
+        if self.id is None and self.expression is None:
+            raise ValueError("Location debe tener 'id' o 'expression' establecidos.")
+
+
+@dataclass
+class Expression:
+    orterm: OrTerm
+    next: Optional[OrTerm] = None
+
+
+@dataclass
+class OrTerm:
+    andterm: AndTerm
+    next: Optional[AndTerm] = None
+
+
+@dataclass
+class AndTerm:
+    relTerm: RelTerm
+    next: Optional[RelTerm] = None
+
+
+@dataclass
+class RelTerm:
+    addTerm: AddTerm
+    next: Optional[AddTerm] = None
+
+
+@dataclass
+class AddTerm:
+    factor: Factor
+    next: Optional[Factor] = None
+
+
+@dataclass
+class Factor:
+    literal: Optional[Type] = None
+    expression: Optional[Expression] = None
+    type: Optional[Type] = None
+    id: Optional[str] = None
+    arguments: Optional[Arguments] = None
+    location: Optional[Location] = None
+
+
+@dataclass
+class Arguments:
+    expression: Expression
+    next: Optional[Arguments] = None
+
+
+Statement = Union[
+    Assignment,
+    Vardecl,
+    FuncDecl,
+    IfStmt,
+    WhileStmt,
+    BreakStmt,
+    ContinueStmt,
+    ReturnStmt,
+    PrintStmt,
+]
+
+
+@dataclass
+class Program:
+    statements: List[Statement]
