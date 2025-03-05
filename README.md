@@ -19,8 +19,6 @@ Este proyecto es un compilador para el lenguaje `.gox`, junto con una extensión
 
 ```sh
 git clone https://github.com/CrisGO0510/gox-compiler.git
-cd gox-compiler/.gox-runner
-npm i
 ```
 
 ## 👥 Integrantes
