@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
   let terminal: vscode.Terminal | undefined;
@@ -24,9 +23,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     terminal.show();
 
-    const venvPython = process.platform === "win32" ? ".venv\\Scripts\\python" : ".venv/bin/python";
-    terminal.sendText(`${venvPython} tokenize_1.py "${filePath}"`);
-    
+    const venvPython =
+      process.platform === "win32"
+        ? ".venv\\Scripts\\python"
+        : ".venv/bin/python";
+    terminal.sendText(`${venvPython} src/lexer.py "${filePath}"`);
   });
 
   context.subscriptions.push(disposable);
