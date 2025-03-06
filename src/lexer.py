@@ -160,6 +160,9 @@ def tokenize(text):
         yield Token("ERROR", f"Caracter ilegal {text[index]!r}", lineno)
         index += 1
 
+    # Generar el token EOF al final del texto
+    yield Token("EOF", "", lineno)
+
 
 def main(argv):
     if len(argv) != 2:
