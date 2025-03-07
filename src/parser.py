@@ -22,12 +22,13 @@ class Assignment:
 @dataclass
 class Vardecl:
     id: str
+    mut: bool = False
     type: Optional[Type] = None
     expression: Optional[Expression] = field(default_factory=lambda: None)
 
 
 @dataclass
-class FuncDecl:
+class 1FuncDecl:
     id: str
     parameters: Parameters
     return_type: Type
@@ -109,12 +110,14 @@ class AndTerm:
 @dataclass
 class RelTerm:
     addTerm: AddTerm
+    symbol: Optional[str] = None
     next: Optional[AddTerm] = None
 
 
 @dataclass
 class AddTerm:
     factor: Factor
+    symbol: Optional[str] = None
     next: Optional[Factor] = None
 
 
@@ -152,25 +155,6 @@ class Program:
     statements: List[Statement]
 
 
-a = Program(
-    statements=[
-        ReturnStmt(
-            expression=Expression(
-                orterm=OrTerm(
-                    andterm=AndTerm(
-                        relTerm=RelTerm(
-                            addTerm=AddTerm(
-                                factor=Factor(literal=2), next=Factor(literal=3)
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    ]
-)
-
-
 @dataclass
 class RecursiveDescentParser:
     tokens: List[Token]
@@ -180,9 +164,9 @@ class RecursiveDescentParser:
         return Program(statements=self.statement())
 
     def statement(self) -> Statement:
-        if self.tokens[self.indexToken].value == "return":
+        if self.current_token().value == "return":
             return self.return_stmt()
-        elif self.tokens[self.indexToken].value == "int":
+        elif self.current_token().value == "int":
             return self.vardecl()
         else:
             return self.assignment()
@@ -205,6 +189,15 @@ class RecursiveDescentParser:
         return AndTerm(relTerm=relTerm)
 
     def relTerm(self) -> RelTerm:
+        if self.next_token().type == "PLUS" or self.next_token().type == "MINUS":
+            addTerm = self.addTerm()
+
+            # Guardar el símbolo y avanzar el índice del token
+            symbol = self.current_token().value
+            self.indexToken += 1
+
+            nextAddTerm = self.addTerm()
+            return RelTerm(addTerm, symbol, nextAddTerm)
         addTerm = self.addTerm()
         return RelTerm(addTerm=addTerm)
 
@@ -213,12 +206,18 @@ class RecursiveDescentParser:
         return AddTerm(factor=factor)
 
     def factor(self) -> Factor:
-        if self.tokens[self.indexToken].type == "INTEGER":
-            literal = self.tokens[self.indexToken].value
+        if self.current_token().type == "INTEGER":
+            literal = self.current_token().value
             self.indexToken += 1
             return Factor(literal=literal)
-        if self.tokens[self.indexToken].type == "TIMES":
+        if self.current_token().type == "TIMES":
             self.indexToken += 1
             return Factor(expression=self.expression())
         else:
             raise ValueError("Factor no puede ser vacío.")
+
+    def current_token(self) -> Token:
+        return self.tokens[self.indexToken]
+
+    def next_token(self) -> Token:
+        return self.tokens[self.indexToken + 1]

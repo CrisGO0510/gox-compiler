@@ -7,6 +7,6 @@ indexToken = 0
 
 print(tokens)
 
-# AST = RecursiveDescentParser(tokens, indexToken).program()
+AST = RecursiveDescentParser(tokens, indexToken).program()
 
-# print(AST)
+print(AST)
