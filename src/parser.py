@@ -28,7 +28,7 @@ class Vardecl:
 
 
 @dataclass
-class 1FuncDecl:
+class FuncDecl:
     id: str
     parameters: Parameters
     return_type: Type
