@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 import re
-
 from rich import print
+
+TYPES = {"int", "float", "char", "bool"}
 
 TOW_CHAR = {
     "&&": "LAND",
@@ -111,6 +112,8 @@ def tokenize(text):
             index += len(value)
             if value in KEYWORDS:
                 yield Token(value.upper(), value, lineno)
+            elif value in TYPES:
+                yield Token("TYPE", value, lineno)
             else:
                 yield Token("ID", value, lineno)
             continue

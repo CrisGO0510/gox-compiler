@@ -1,16 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Union, List, Optional
-from enum import Enum
-
+from typing import Literal, Union, List, Optional
 from lexer import Token
-
-
-class Type(Enum):
-    INT = "int"
-    FLOAT = "float"
-    CHAR = "char"
-    BOOL = "bool"
 
 
 @dataclass
@@ -21,9 +12,9 @@ class Assignment:
 
 @dataclass
 class Vardecl:
+    mut: Literal["var", "const"]
     id: str
-    mut: bool = False
-    type: Optional[Type] = None
+    type: Optional[str] = None
     expression: Optional[Expression] = field(default_factory=lambda: None)
 
 
@@ -31,7 +22,7 @@ class Vardecl:
 class FuncDecl:
     id: str
     parameters: Parameters
-    return_type: Type
+    return_type: str
     statements: List[Statement]
 
 
@@ -71,7 +62,7 @@ class PrintStmt:
 @dataclass
 class Parameters:
     id: str
-    type: Type
+    type: str
     next: Optional[Parameters] = None
 
 
@@ -123,9 +114,9 @@ class AddTerm:
 
 @dataclass
 class Factor:
-    literal: Optional[Type] = None
+    literal: Optional[str] = None
     expression: Optional[Expression] = None
-    type: Optional[Type] = None
+    type: Optional[str] = None
     id: Optional[str] = None
     arguments: Optional[Arguments] = None
     location: Optional[Location] = None
@@ -166,7 +157,9 @@ class RecursiveDescentParser:
     def statement(self) -> Statement:
         if self.current_token().value == "return":
             return self.return_stmt()
-        elif self.current_token().value == "int":
+        elif (
+            self.current_token().value == "var" or self.current_token().value == "const"
+        ):
             return self.vardecl()
         else:
             return self.assignment()
@@ -175,6 +168,34 @@ class RecursiveDescentParser:
         self.indexToken += 1
         expression = self.expression()
         return ReturnStmt(expression=expression)
+
+    def vardecl(self) -> Vardecl:
+        mut = self.current_token().value
+        isConst = mut == "const"
+        type = None
+        self.indexToken += 1
+
+        if self.current_token().type == "ID":
+            id = self.current_token().value
+            self.indexToken += 1
+
+            # Verificar si tiene un tipo en caso de que no sea constante
+
+            if self.current_token().type == "TYPE":
+                type = self.current_token().value
+                self.indexToken += 1
+            elif not isConst:
+                raise ValueError("La variable necesita un tipo de dato.")
+
+            if self.current_token().value == "=":
+                self.indexToken += 1
+                expression = self.expression()
+            else:
+                expression = None
+        else:
+            raise ValueError("ID no válido.")
+
+        return Vardecl(id=id, mut=mut, type=type, expression=expression)
 
     def expression(self) -> Expression:
         orterm = self.orterm()
