@@ -1,0 +1,1 @@
+/home/cris/Documents/gox-compiler/target/debug/gox-compiler: /home/cris/Documents/gox-compiler/src/lexer/mod.rs /home/cris/Documents/gox-compiler/src/lexer/token.rs /home/cris/Documents/gox-compiler/src/lexer/token_definitions.rs /home/cris/Documents/gox-compiler/src/main.rs
