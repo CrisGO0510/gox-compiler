@@ -176,16 +176,53 @@ class RecursiveDescentParser:
         return Program(program)
 
     def statement(self) -> Statement:
-        if self.current_token().type == "ID" and self.next_token().type == "ASSIGN":
-            return self.assignment()
+        if self.current_token().type == "ID":
+            if self.next_token().type == "ASSIGN":
+                return self.assignment()
+            if self.next_token().type == "LPAREN":
+                return self.function_declaration()
 
         if self.current_token().value in {"var", "const"}:
             return self.vardecl()
 
-        # if self.current_token().value == "return":
-        #     return self.return_stmt()
-
         raise ValueError(f"El statement no es válido. {self.current_token()}")
+
+    def function_declaration(self) -> FuncDecl:
+        id = self.current_token().value
+        self.indexToken += 1
+
+        if self.current_token().type != "LPAREN":
+            raise ValueError("Se esperaba '('.")
+        self.indexToken += 1
+
+        parameters = None
+        if self.current_token().type != "RPAREN":
+            parameters = self.parameters()
+
+        if self.current_token().type != "RPAREN":
+            raise ValueError("Se esperaba ')'.")
+        self.indexToken += 1
+
+        if self.current_token().type != "TYPE":
+            raise ValueError("Se esperaba un tipo de retorno.")
+        return_type = self.current_token().value
+        self.indexToken += 1
+
+        if self.current_token().type != "LBRACE":
+            raise ValueError("Se esperaba '{' para el bloque de la función.")
+        self.indexToken += 1
+
+        statements = []
+        while self.current_token().type != "RBRACE":
+            statements.append(self.statement())
+
+        if self.current_token().type != "RBRACE":
+            raise ValueError("Se esperaba '}' al final de la función.")
+        self.indexToken += 1
+
+        return FuncDecl(
+            id=id, parameters=parameters, return_type=return_type, statements=statements
+        )
 
     def assignment(self) -> Assignment:
         location = Location(id=self.current_token().value)
@@ -215,8 +252,6 @@ class RecursiveDescentParser:
             id = self.current_token().value
             self.indexToken += 1
 
-            # Verificar si tiene un tipo en caso de que no sea constante
-
             if self.current_token().type == "TYPE":
                 type = self.current_token().value
                 self.indexToken += 1
@@ -238,6 +273,27 @@ class RecursiveDescentParser:
         return Vardecl(
             id=id, mut=mut, type=type, assignment=assignment, expression=expression
         )
+
+    def parameters(self) -> Parameters:
+        if self.current_token().type != "ID":
+            raise ValueError("Se esperaba un identificador.")
+
+        id = self.current_token().value
+        self.indexToken += 1
+
+        if self.current_token().type != "TYPE":
+            raise ValueError("Se esperaba un tipo de dato.")
+
+        type = self.current_token().value
+        self.indexToken += 1
+
+        next = None
+
+        if self.current_token().type == "COMMA":
+            self.indexToken += 1
+            next = self.parameters()
+
+        return Parameters(id=id, type=type, next=next)
 
     def expression(self) -> Expression:
         orterm = self.orterm()
@@ -287,10 +343,9 @@ class RecursiveDescentParser:
         if self.next_token().type == "PLUS" or self.next_token().type == "MINUS":
             addTerm = self.addTerm()
 
-            # Guardar el símbolo y avanzar el índice del token
             symbol = self.current_token().value
             self.indexToken += 1
-            # TODO: PONER A TODAS LAS TERM LA INTANCIA ACTUAL PARA PERMITIR RECURSIVIDAD
+
             nextAddTerm = self.relTerm()
 
             return RelTerm(addTerm, symbol, nextAddTerm)
