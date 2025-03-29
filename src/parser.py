@@ -247,7 +247,7 @@ class RecursiveDescentParser:
         if self.current_token().type == "LOR":
             orSymbol = self.current_token().value
             self.indexToken += 1
-            next = self.orterm()
+            next = self.expression()
 
         return Expression(orterm=orterm, orSymbol=orSymbol, next=next)
 
