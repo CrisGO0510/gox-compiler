@@ -180,49 +180,15 @@ class RecursiveDescentParser:
             if self.next_token().type == "ASSIGN":
                 return self.assignment()
             if self.next_token().type == "LPAREN":
-                return self.function_declaration()
+                return self.func_decl()
+
+        if self.current_token().type == "IF":
+            return self.if_stmt()
 
         if self.current_token().value in {"var", "const"}:
             return self.vardecl()
 
         raise ValueError(f"El statement no es válido. {self.current_token()}")
-
-    def function_declaration(self) -> FuncDecl:
-        id = self.current_token().value
-        self.indexToken += 1
-
-        if self.current_token().type != "LPAREN":
-            raise ValueError("Se esperaba '('.")
-        self.indexToken += 1
-
-        parameters = None
-        if self.current_token().type != "RPAREN":
-            parameters = self.parameters()
-
-        if self.current_token().type != "RPAREN":
-            raise ValueError("Se esperaba ')'.")
-        self.indexToken += 1
-
-        if self.current_token().type != "TYPE":
-            raise ValueError("Se esperaba un tipo de retorno.")
-        return_type = self.current_token().value
-        self.indexToken += 1
-
-        if self.current_token().type != "LBRACE":
-            raise ValueError("Se esperaba '{' para el bloque de la función.")
-        self.indexToken += 1
-
-        statements = []
-        while self.current_token().type != "RBRACE":
-            statements.append(self.statement())
-
-        if self.current_token().type != "RBRACE":
-            raise ValueError("Se esperaba '}' al final de la función.")
-        self.indexToken += 1
-
-        return FuncDecl(
-            id=id, parameters=parameters, return_type=return_type, statements=statements
-        )
 
     def assignment(self) -> Assignment:
         location = Location(id=self.current_token().value)
@@ -234,11 +200,6 @@ class RecursiveDescentParser:
         self.indexToken += 1
 
         return Assignment(location=location, symbol="=", expression=expression)
-
-    def return_stmt(self) -> ReturnStmt:
-        self.indexToken += 1
-        expression = self.expression()
-        return ReturnStmt(expression=expression)
 
     def vardecl(self) -> Vardecl:
         mut = self.current_token().value
@@ -273,6 +234,78 @@ class RecursiveDescentParser:
         return Vardecl(
             id=id, mut=mut, type=type, assignment=assignment, expression=expression
         )
+
+    def func_decl(self) -> FuncDecl:
+        id = self.current_token().value
+        self.indexToken += 1
+
+        if self.current_token().type != "LPAREN":
+            raise ValueError("Se esperaba '('.")
+        self.indexToken += 1
+
+        parameters = None
+        if self.current_token().type != "RPAREN":
+            parameters = self.parameters()
+
+        if self.current_token().type != "RPAREN":
+            raise ValueError("Se esperaba ')'.")
+        self.indexToken += 1
+
+        if self.current_token().type != "TYPE":
+            raise ValueError("Se esperaba un tipo de retorno.")
+        return_type = self.current_token().value
+        self.indexToken += 1
+
+        if self.current_token().type != "LBRACE":
+            raise ValueError("Se esperaba '{' para el bloque de la función.")
+        self.indexToken += 1
+
+        statements = self.block()
+
+        return FuncDecl(
+            id=id, parameters=parameters, return_type=return_type, statements=statements
+        )
+
+    def if_stmt(self) -> IfStmt:
+        self.indexToken += 1
+        expression = self.expression()
+
+        if self.current_token().type != "LBRACE":
+            raise ValueError("Se esperaba '{' para el bloque if.")
+        self.indexToken += 1
+
+        if_statement = self.block()
+
+        else_statement = []
+        if self.current_token().type == "ELSE":
+            self.indexToken += 1
+            if self.current_token().type != "LBRACE":
+                raise ValueError("Se esperaba '{' para el bloque else.")
+            self.indexToken += 1
+            else_statement = self.block()
+
+        return IfStmt(
+            expression=expression,
+            if_statement=if_statement,
+            else_statement=else_statement,
+        )
+
+    def return_stmt(self) -> ReturnStmt:
+        self.indexToken += 1
+        expression = self.expression()
+        return ReturnStmt(expression=expression)
+
+    def block(self) -> list[Statement]:
+        """Parsea un bloque de código entre llaves `{ ... }`."""
+        statements = []
+        while self.current_token().type != "RBRACE":
+            statements.append(self.statement())
+
+        if self.current_token().type != "RBRACE":
+            raise ValueError("Se esperaba '}' al final del bloque.")
+        self.indexToken += 1
+
+        return statements
 
     def parameters(self) -> Parameters:
         if self.current_token().type != "ID":

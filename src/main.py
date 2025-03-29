@@ -4,7 +4,11 @@ from parser import RecursiveDescentParser
 from serialize import to_json
 
 text = """
-hola() int {}
+if a == b {
+    a = b;
+} else {
+    b = a + 2;
+}
 """
 
 tokens = list(tokenize(text))
