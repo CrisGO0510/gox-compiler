@@ -92,6 +92,7 @@ class Expression:
 @dataclass
 class OrTerm:
     andterm: AndTerm
+    andSymbol: Optional[str] = None
     next: Optional[AndTerm] = None
 
 
@@ -228,7 +229,18 @@ class RecursiveDescentParser:
 
     def orterm(self) -> OrTerm:
         andterm = self.andterm()
-        return OrTerm(andterm=andterm)
+        andSymbol = None
+        next = None
+        if self.current_token().type == "LAND":
+            andSymbol = self.current_token().value
+            self.indexToken += 1
+            next = self.orterm()
+
+        return OrTerm(
+            andterm=andterm,
+            andSymbol=andSymbol,
+            next=next,
+        )
 
     def andterm(self) -> AndTerm:
         relTerm = self.relTerm()
