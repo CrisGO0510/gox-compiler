@@ -111,7 +111,11 @@ def tokenize(text):
             value = m.group(0)
             index += len(value)
             if value in KEYWORDS:
-                yield Token(value.upper(), value, lineno)
+                if value in {"true", "false"}:
+                    yield Token("BOOL", value, lineno)
+                else:
+                    yield Token(value.upper(), value, lineno)
+
             elif value in TYPES:
                 yield Token("TYPE", value, lineno)
             else:

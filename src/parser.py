@@ -99,6 +99,7 @@ class OrTerm:
 @dataclass
 class AndTerm:
     relTerm: RelTerm
+    relSymbol: Optional[str] = None
     next: Optional[RelTerm] = None
 
 
@@ -119,11 +120,12 @@ class AddTerm:
 @dataclass
 class Factor:
     literal: Optional[str] = None
-    expression: Optional[Expression] = None
     type: Optional[str] = None
     id: Optional[str] = None
     arguments: Optional[Arguments] = None
     location: Optional[Location] = None
+    unary_expression: Optional[Factor] = None
+    unary_op: Optional[str] = None
 
 
 @dataclass
@@ -156,7 +158,22 @@ class RecursiveDescentParser:
     indexToken: int
 
     def program(self) -> Program:
-        return Program(statements=self.statement())
+        program = []
+        while self.indexToken < len(self.tokens):
+            statement = self.statement()
+            program.append(statement)
+
+            if self.current_token().type == "EOF":
+                break
+
+        if not program:
+            raise ValueError("No se encontraron declaraciones en el programa.")
+        if self.current_token().type != "EOF":
+            raise ValueError(
+                f"El programa no terminó correctamente. {self.current_token()}"
+            )
+
+        return Program(program)
 
     def statement(self) -> Statement:
         if self.current_token().type == "ID" and self.next_token().type == "ASSIGN":
@@ -168,12 +185,17 @@ class RecursiveDescentParser:
         # if self.current_token().value == "return":
         #     return self.return_stmt()
 
-        raise ValueError("El statement no es válido.")
+        raise ValueError(f"El statement no es válido. {self.current_token()}")
 
     def assignment(self) -> Assignment:
         location = Location(id=self.current_token().value)
         self.indexToken += 2
         expression = self.expression()
+
+        if self.current_token().type != "SEMI":
+            raise ValueError("El statement no terminó correctamente. Se esperaba ';'.")
+        self.indexToken += 1
+
         return Assignment(location=location, symbol="=", expression=expression)
 
     def return_stmt(self) -> ReturnStmt:
@@ -209,6 +231,10 @@ class RecursiveDescentParser:
         else:
             raise ValueError("ID no válido.")
 
+        if self.current_token().type != "SEMI":
+            raise ValueError("El statement no terminó correctamente. Se esperaba ';'.")
+        self.indexToken += 1
+
         return Vardecl(
             id=id, mut=mut, type=type, assignment=assignment, expression=expression
         )
@@ -217,8 +243,6 @@ class RecursiveDescentParser:
         orterm = self.orterm()
         orSymbol = None
         next = None
-
-        print(self.current_token())
 
         if self.current_token().type == "LOR":
             orSymbol = self.current_token().value
@@ -244,7 +268,20 @@ class RecursiveDescentParser:
 
     def andterm(self) -> AndTerm:
         relTerm = self.relTerm()
-        return AndTerm(relTerm=relTerm)
+        relSymbol = None
+        next = None
+
+        if self.current_token().value in {"<", ">"}:
+            relSymbol = self.current_token().value
+            self.indexToken += 1
+            next = self.andterm()
+
+        if self.current_token().value in {"==", "!=", "<=", ">="}:
+            relSymbol = self.current_token().value
+            self.indexToken += 1
+            next = self.andterm()
+
+        return AndTerm(relTerm=relTerm, relSymbol=relSymbol, next=next)
 
     def relTerm(self) -> RelTerm:
         if self.next_token().type == "PLUS" or self.next_token().type == "MINUS":
@@ -253,8 +290,9 @@ class RecursiveDescentParser:
             # Guardar el símbolo y avanzar el índice del token
             symbol = self.current_token().value
             self.indexToken += 1
+            # TODO: PONER A TODAS LAS TERM LA INTANCIA ACTUAL PARA PERMITIR RECURSIVIDAD
+            nextAddTerm = self.relTerm()
 
-            nextAddTerm = self.addTerm()
             return RelTerm(addTerm, symbol, nextAddTerm)
         addTerm = self.addTerm()
         return RelTerm(addTerm=addTerm)
@@ -264,13 +302,30 @@ class RecursiveDescentParser:
         return AddTerm(factor=factor)
 
     def factor(self) -> Factor:
-        if self.current_token().type == "INTEGER":
+        if self.current_token().type == "ID":
+            id = self.current_token().value
+            self.indexToken += 1
+            return Factor(id=id)
+
+        if self.current_token().value in {"+", "-", "^"}:
+            unary_op = self.current_token().value
+            self.indexToken += 1
+            factor = self.factor()
+            return Factor(unary_expression=factor, unary_op=unary_op)
+
+        if self.current_token().type == "LPAREN":
+            self.indexToken += 1
+            expression = self.expression()
+            if self.current_token().type != "RPAREN":
+                raise ValueError("Se esperaba un ')'.")
+            self.indexToken += 1
+            return Factor(unary_expression=expression)
+
+        if self.current_token().type in {"INTEGER", "FLOAT", "CHAR", "BOOL"}:
             literal = self.current_token().value
             self.indexToken += 1
             return Factor(literal=literal)
-        if self.current_token().type == "TIMES":
-            self.indexToken += 1
-            return Factor(expression=self.expression())
+
         else:
             raise ValueError("Factor no puede ser vacío.")
 
@@ -279,3 +334,6 @@ class RecursiveDescentParser:
 
     def next_token(self) -> Token:
         return self.tokens[self.indexToken + 1]
+
+    def _rest_value(self):
+        print("resto", self.tokens[self.indexToken :])

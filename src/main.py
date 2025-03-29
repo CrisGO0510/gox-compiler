@@ -3,7 +3,11 @@ from rich import print
 from parser import RecursiveDescentParser
 from serialize import to_json
 
-tokens = list(tokenize("x = 2 || 2 && 2"))
+text = """
+var c int = 5 + -2 + 2;
+"""
+
+tokens = list(tokenize(text))
 indexToken = 0
 
 print(tokens)
