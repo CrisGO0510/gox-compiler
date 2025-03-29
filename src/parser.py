@@ -7,7 +7,7 @@ from lexer import Token
 @dataclass
 class Assignment:
     location: Location
-    assignment: Literal["="]
+    symbol: Literal["="]
     expression: Expression
 
 
@@ -85,6 +85,7 @@ class Location:
 @dataclass
 class Expression:
     orterm: OrTerm
+    orSymbol: Optional[str] = None
     next: Optional[OrTerm] = None
 
 
@@ -213,7 +214,17 @@ class RecursiveDescentParser:
 
     def expression(self) -> Expression:
         orterm = self.orterm()
-        return Expression(orterm=orterm)
+        orSymbol = None
+        next = None
+
+        print(self.current_token())
+
+        if self.current_token().type == "LOR":
+            orSymbol = self.current_token().value
+            self.indexToken += 1
+            next = self.orterm()
+
+        return Expression(orterm=orterm, orSymbol=orSymbol, next=next)
 
     def orterm(self) -> OrTerm:
         andterm = self.andterm()
