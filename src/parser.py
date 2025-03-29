@@ -7,6 +7,7 @@ from lexer import Token
 @dataclass
 class Assignment:
     location: Location
+    assignment: Literal["="]
     expression: Expression
 
 
@@ -15,6 +16,7 @@ class Vardecl:
     mut: Literal["var", "const"]
     id: str
     type: Optional[str] = None
+    assignment: Optional[Literal["="]] = None
     expression: Optional[Expression] = field(default_factory=lambda: None)
 
 
@@ -155,14 +157,22 @@ class RecursiveDescentParser:
         return Program(statements=self.statement())
 
     def statement(self) -> Statement:
-        if self.current_token().value == "return":
-            return self.return_stmt()
-        elif (
-            self.current_token().value == "var" or self.current_token().value == "const"
-        ):
-            return self.vardecl()
-        else:
+        if self.current_token().type == "ID" and self.next_token().type == "ASSIGN":
             return self.assignment()
+
+        if self.current_token().value in {"var", "const"}:
+            return self.vardecl()
+
+        # if self.current_token().value == "return":
+        #     return self.return_stmt()
+
+        raise ValueError("El statement no es válido.")
+
+    def assignment(self) -> Assignment:
+        location = Location(id=self.current_token().value)
+        self.indexToken += 2
+        expression = self.expression()
+        return Assignment(location=location, symbol="=", expression=expression)
 
     def return_stmt(self) -> ReturnStmt:
         self.indexToken += 1
@@ -173,6 +183,8 @@ class RecursiveDescentParser:
         mut = self.current_token().value
         isConst = mut == "const"
         type = None
+        assignment = None
+        expression = None
         self.indexToken += 1
 
         if self.current_token().type == "ID":
@@ -188,14 +200,16 @@ class RecursiveDescentParser:
                 raise ValueError("La variable necesita un tipo de dato.")
 
             if self.current_token().value == "=":
+                assignment = self.current_token().value
                 self.indexToken += 1
                 expression = self.expression()
-            else:
-                expression = None
+
         else:
             raise ValueError("ID no válido.")
 
-        return Vardecl(id=id, mut=mut, type=type, expression=expression)
+        return Vardecl(
+            id=id, mut=mut, type=type, assignment=assignment, expression=expression
+        )
 
     def expression(self) -> Expression:
         orterm = self.orterm()
