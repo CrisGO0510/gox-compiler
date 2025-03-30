@@ -163,12 +163,12 @@ class RecursiveDescentParser:
             statement = self.statement()
             program.append(statement)
 
-            if self.current_token().type == "EOF":
+            if self.token_type() == "EOF":
                 break
 
         if not program:
             raise ValueError("No se encontraron declaraciones en el programa.")
-        if self.current_token().type != "EOF":
+        if self.token_type() != "EOF":
             raise ValueError(
                 f"El programa no terminó correctamente. {self.current_token()}"
             )
@@ -176,31 +176,32 @@ class RecursiveDescentParser:
         return Program(program)
 
     def statement(self) -> Statement:
-        if self.current_token().type == "ID":
-            if self.next_token().type == "ASSIGN":
+        if self.token_type() == "ID":
+            next_type = self.next_token().type
+            if next_type == "ASSIGN":
                 return self.assignment()
-            if self.next_token().type == "LPAREN":
+            if next_type == "LPAREN":
                 return self.func_decl()
 
         if self.current_token().value in {"var", "const"}:
             return self.vardecl()
 
-        if self.current_token().type == "IF":
+        if self.token_type() == "IF":
             return self.if_stmt()
 
-        if self.current_token().type == "WHILE":
+        if self.token_type() == "WHILE":
             return self.while_stmt()
 
-        if self.current_token().type == "BREAK":
+        if self.token_type() == "BREAK":
             return self.break_stmt()
 
-        if self.current_token().type == "CONTINUE":
+        if self.token_type() == "CONTINUE":
             return self.continue_stmt()
 
-        if self.current_token().type == "RETURN":
+        if self.token_type() == "RETURN":
             return self.return_stmt()
 
-        if self.current_token().type == "PRINT":
+        if self.token_type() == "PRINT":
             return self.print_stmt()
 
         raise ValueError(f"El statement no es válido. {self.current_token()}")
@@ -210,7 +211,7 @@ class RecursiveDescentParser:
         self.indexToken += 2
         expression = self.expression()
 
-        if self.current_token().type != "SEMI":
+        if self.token_type() != "SEMI":
             raise ValueError("El statement no terminó correctamente. Se esperaba ';'.")
         self.indexToken += 1
 
@@ -224,11 +225,11 @@ class RecursiveDescentParser:
         expression = None
         self.indexToken += 1
 
-        if self.current_token().type == "ID":
+        if self.token_type() == "ID":
             id = self.current_token().value
             self.indexToken += 1
 
-            if self.current_token().type == "TYPE":
+            if self.token_type() == "TYPE":
                 type = self.current_token().value
                 self.indexToken += 1
             elif not isConst:
@@ -242,7 +243,7 @@ class RecursiveDescentParser:
         else:
             raise ValueError("ID no válido.")
 
-        if self.current_token().type != "SEMI":
+        if self.token_type() != "SEMI":
             raise ValueError("El statement no terminó correctamente. Se esperaba ';'.")
         self.indexToken += 1
 
@@ -254,24 +255,24 @@ class RecursiveDescentParser:
         id = self.current_token().value
         self.indexToken += 1
 
-        if self.current_token().type != "LPAREN":
+        if self.token_type() != "LPAREN":
             raise ValueError("Se esperaba '('.")
         self.indexToken += 1
 
         parameters = None
-        if self.current_token().type != "RPAREN":
+        if self.token_type() != "RPAREN":
             parameters = self.parameters()
 
-        if self.current_token().type != "RPAREN":
+        if self.token_type() != "RPAREN":
             raise ValueError("Se esperaba ')'.")
         self.indexToken += 1
 
-        if self.current_token().type != "TYPE":
+        if self.token_type() != "TYPE":
             raise ValueError("Se esperaba un tipo de retorno.")
         return_type = self.current_token().value
         self.indexToken += 1
 
-        if self.current_token().type != "LBRACE":
+        if self.token_type() != "LBRACE":
             raise ValueError("Se esperaba '{' para el bloque de la función.")
         self.indexToken += 1
 
@@ -285,16 +286,16 @@ class RecursiveDescentParser:
         self.indexToken += 1
         expression = self.expression()
 
-        if self.current_token().type != "LBRACE":
+        if self.token_type() != "LBRACE":
             raise ValueError("Se esperaba '{' para el bloque if.")
         self.indexToken += 1
 
         if_statement = self.block()
 
         else_statement = []
-        if self.current_token().type == "ELSE":
+        if self.token_type() == "ELSE":
             self.indexToken += 1
-            if self.current_token().type != "LBRACE":
+            if self.token_type() != "LBRACE":
                 raise ValueError("Se esperaba '{' para el bloque else.")
             self.indexToken += 1
             else_statement = self.block()
@@ -309,7 +310,7 @@ class RecursiveDescentParser:
         self.indexToken += 1
         expression = self.expression()
 
-        if self.current_token().type != "LBRACE":
+        if self.token_type() != "LBRACE":
             raise ValueError("Se esperaba '{' para el bloque while.")
         self.indexToken += 1
 
@@ -319,7 +320,7 @@ class RecursiveDescentParser:
     def break_stmt(self) -> BreakStmt:
         self.indexToken += 1  # Consumir 'BREAK'
 
-        if self.current_token().type != "SEMI":
+        if self.token_type() != "SEMI":
             raise ValueError("Se esperaba ';' después de 'break'.")
         self.indexToken += 1  # Consumir ';'
 
@@ -327,7 +328,7 @@ class RecursiveDescentParser:
 
     def continue_stmt(self) -> ContinueStmt:
         self.indexToken += 1
-        if self.current_token().type != "SEMI":
+        if self.token_type() != "SEMI":
             raise ValueError("Se esperaba ';' después de 'continue'.")
         self.indexToken += 1
         return ContinueStmt()
@@ -336,7 +337,7 @@ class RecursiveDescentParser:
         self.indexToken += 1
         expression = self.expression()
 
-        if self.current_token().type != "SEMI":
+        if self.token_type() != "SEMI":
             raise ValueError("Se esperaba ';' después de 'continue'.")
         self.indexToken += 1
 
@@ -346,7 +347,7 @@ class RecursiveDescentParser:
         self.indexToken += 1
         expression = self.expression()
 
-        if self.current_token().type != "SEMI":
+        if self.token_type() != "SEMI":
             raise ValueError("Se esperaba ';' después de 'print'.")
         self.indexToken += 1
 
@@ -355,23 +356,23 @@ class RecursiveDescentParser:
     def block(self) -> list[Statement]:
         """Parsea un bloque de código entre llaves `{ ... }`."""
         statements = []
-        while self.current_token().type != "RBRACE":
+        while self.token_type() != "RBRACE":
             statements.append(self.statement())
 
-        if self.current_token().type != "RBRACE":
+        if self.token_type() != "RBRACE":
             raise ValueError("Se esperaba '}' al final del bloque.")
         self.indexToken += 1
 
         return statements
 
     def parameters(self) -> Parameters:
-        if self.current_token().type != "ID":
+        if self.token_type() != "ID":
             raise ValueError("Se esperaba un identificador.")
 
         id = self.current_token().value
         self.indexToken += 1
 
-        if self.current_token().type != "TYPE":
+        if self.token_type() != "TYPE":
             raise ValueError("Se esperaba un tipo de dato.")
 
         type = self.current_token().value
@@ -379,7 +380,7 @@ class RecursiveDescentParser:
 
         next = None
 
-        if self.current_token().type == "COMMA":
+        if self.token_type() == "COMMA":
             self.indexToken += 1
             next = self.parameters()
 
@@ -390,7 +391,7 @@ class RecursiveDescentParser:
         orSymbol = None
         next = None
 
-        if self.current_token().type == "LOR":
+        if self.token_type() == "LOR":
             orSymbol = self.current_token().value
             self.indexToken += 1
             next = self.expression()
@@ -401,7 +402,7 @@ class RecursiveDescentParser:
         andterm = self.andterm()
         andSymbol = None
         next = None
-        if self.current_token().type == "LAND":
+        if self.token_type() == "LAND":
             andSymbol = self.current_token().value
             self.indexToken += 1
             next = self.orterm()
@@ -454,7 +455,7 @@ class RecursiveDescentParser:
         return AddTerm(factor=factor, symbol=symbol, next=next)
 
     def factor(self) -> Factor:
-        if self.current_token().type == "ID":
+        if self.token_type() == "ID":
             id = self.current_token().value
             self.indexToken += 1
             return Factor(id=id)
@@ -465,15 +466,15 @@ class RecursiveDescentParser:
             factor = self.factor()
             return Factor(unary_expression=factor, unary_op=unary_op)
 
-        if self.current_token().type == "LPAREN":
+        if self.token_type() == "LPAREN":
             self.indexToken += 1
             expression = self.expression()
-            if self.current_token().type != "RPAREN":
+            if self.token_type() != "RPAREN":
                 raise ValueError("Se esperaba un ')'.")
             self.indexToken += 1
             return Factor(unary_expression=expression)
 
-        if self.current_token().type in {"INTEGER", "FLOAT", "CHAR", "BOOL"}:
+        if self.token_type() in {"INTEGER", "FLOAT", "CHAR", "BOOL"}:
             literal = self.current_token().value
             self.indexToken += 1
             return Factor(literal=literal)
@@ -486,6 +487,9 @@ class RecursiveDescentParser:
 
     def next_token(self) -> Token:
         return self.tokens[self.indexToken + 1]
+
+    def token_type(self) -> str:
+        return self.tokens[self.indexToken].type
 
     def _rest_value(self):
         print("resto", self.tokens[self.indexToken :])
