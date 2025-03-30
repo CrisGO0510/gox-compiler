@@ -4,7 +4,35 @@ from parser import RecursiveDescentParser
 from serialize import to_json
 
 text = """
-print 1 + 2 * 3 - 4 / 5;
+const PI float = 3.1415;
+var radius int = 10;
+
+ func main(a float, b float) float {
+     var x float = 5;
+     var y float = 10;
+     var z float;
+     }
+
+func main() int{
+    var result float;
+    if radius > 0 {
+        result = area(radius);
+        print result;
+    } else {
+        print -1;
+    }
+
+    while result > 50 {
+        result = result - 1;
+        if result == 55 {
+            break;
+        }
+    }
+
+    continue;
+    print 1;
+}
+
 """
 
 tokens = list(tokenize(text))

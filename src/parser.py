@@ -180,8 +180,9 @@ class RecursiveDescentParser:
             next_type = self.next_token().type
             if next_type == "ASSIGN":
                 return self.assignment()
-            if next_type == "LPAREN":
-                return self.func_decl()
+
+        if self.token_type() == "FUNC":
+            return self.func_decl()
 
         if self.current_token().value in {"var", "const"}:
             return self.vardecl()
@@ -210,6 +211,8 @@ class RecursiveDescentParser:
         location = Location(id=self.current_token().value)
         self.indexToken += 2
         expression = self.expression()
+
+        print("expression", expression)
 
         if self.token_type() != "SEMI":
             raise ValueError("El statement no terminó correctamente. Se esperaba ';'.")
@@ -252,6 +255,8 @@ class RecursiveDescentParser:
         )
 
     def func_decl(self) -> FuncDecl:
+        self.indexToken += 1
+
         id = self.current_token().value
         self.indexToken += 1
 
@@ -268,7 +273,7 @@ class RecursiveDescentParser:
         self.indexToken += 1
 
         if self.token_type() != "TYPE":
-            raise ValueError("Se esperaba un tipo de retorno.")
+            raise ValueError(f"Se esperaba un tipo de retorno. {self.current_token()}")
         return_type = self.current_token().value
         self.indexToken += 1
 
@@ -386,6 +391,23 @@ class RecursiveDescentParser:
 
         return Parameters(id=id, type=type, next=next)
 
+    def arguments(self) -> list:
+        args = []
+
+        # Si el siguiente token es RPAREN, significa que no hay argumentos (caso vacío)
+        if self.token_type() == "RPAREN":
+            return args  # Retorna lista vacía
+
+        # Agregar el primer argumento
+        args.append(self.expression())
+
+        # Procesar argumentos adicionales separados por comas
+        while self.token_type() == "COMMA":
+            self.indexToken += 1  # Consumir la coma
+            args.append(self.expression())
+
+        return args
+
     def expression(self) -> Expression:
         orterm = self.orterm()
         orSymbol = None
@@ -457,22 +479,23 @@ class RecursiveDescentParser:
     def factor(self) -> Factor:
         if self.token_type() == "ID":
             id = self.current_token().value
+            arguments = None
             self.indexToken += 1
-            return Factor(id=id)
+
+            if self.token_type() == "LPAREN":
+                self.indexToken += 1
+                arguments = self.arguments()
+                if self.token_type() != "RPAREN":
+                    raise ValueError("Se esperaba un ')'.")
+                self.indexToken += 1
+
+            return Factor(id=id, arguments=arguments)
 
         if self.current_token().value in {"+", "-", "^"}:
             unary_op = self.current_token().value
             self.indexToken += 1
             factor = self.factor()
             return Factor(unary_expression=factor, unary_op=unary_op)
-
-        if self.token_type() == "LPAREN":
-            self.indexToken += 1
-            expression = self.expression()
-            if self.token_type() != "RPAREN":
-                raise ValueError("Se esperaba un ')'.")
-            self.indexToken += 1
-            return Factor(unary_expression=expression)
 
         if self.token_type() in {"INTEGER", "FLOAT", "CHAR", "BOOL"}:
             literal = self.current_token().value
