@@ -4,10 +4,8 @@ from parser import RecursiveDescentParser
 from serialize import to_json
 
 text = """
-if a == b {
+while a == b {
     a = b;
-} else {
-    b = a + 2;
 }
 """
 

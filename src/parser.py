@@ -185,6 +185,9 @@ class RecursiveDescentParser:
         if self.current_token().type == "IF":
             return self.if_stmt()
 
+        if self.current_token().type == "WHILE":
+            return self.while_stmt()
+
         if self.current_token().value in {"var", "const"}:
             return self.vardecl()
 
@@ -289,6 +292,17 @@ class RecursiveDescentParser:
             if_statement=if_statement,
             else_statement=else_statement,
         )
+
+    def while_stmt(self) -> WhileStmt:
+        self.indexToken += 1
+        expression = self.expression()
+
+        if self.current_token().type != "LBRACE":
+            raise ValueError("Se esperaba '{' para el bloque while.")
+        self.indexToken += 1
+
+        statement = self.block()
+        return WhileStmt(expression=expression, statement=statement)
 
     def return_stmt(self) -> ReturnStmt:
         self.indexToken += 1
