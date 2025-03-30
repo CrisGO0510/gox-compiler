@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
       process.platform === "win32"
         ? ".venv\\Scripts\\python"
         : ".venv/bin/python";
-    terminal.sendText(`${venvPython} src/lexer.py "${filePath}"`);
+    terminal.sendText(`${venvPython} src/main.py "${filePath}"`);
   });
 
   context.subscriptions.push(disposable);

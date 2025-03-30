@@ -33,7 +33,7 @@ Clona el repositorio:
 
    - Usando la línea de comandos:
      ```sh
-     code --install-extension gox-runner.vsix
+     code --install-extension gox-runner-0.0.1.vsix
      ```
 
    - Alternativamente, puedes instalar el paquete desde la interfaz gráfica:

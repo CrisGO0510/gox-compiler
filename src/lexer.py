@@ -180,9 +180,3 @@ def main(argv):
 
     for token in tokenize(text):
         print(token)
-
-
-if __name__ == "__main__":
-    import sys
-
-    main(sys.argv)

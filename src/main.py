@@ -1,48 +1,44 @@
+import sys
 from lexer import tokenize
 from rich import print
 from parser import RecursiveDescentParser
 from serialize import save_to_json_file, to_json
 
-text = """
-const PI float = 3.1415;
-var radius int = 10;
 
- func main(a float, b float) float {
-     var x float = 5;
-     var y float = 10;
-     var z float;
-     }
+def main():
+    if len(sys.argv) < 2:
+        print(
+            "[red]Error: Debes proporcionar un archivo de código fuente como argumento.[/red]"
+        )
+        print("Uso: python main.py archivo.txt")
+        sys.exit(1)
 
-func main() int{
-    var result float;
-    if radius > 0 {
-        result = area(radius);
-        print result;
-    } else {
-        print -1;
-    }
+    filename = sys.argv[1]
 
-    while result > 50 {
-        result = result - 1;
-        if result == 55 {
-            break;
-        }
-    }
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            text = f.read()
+    except FileNotFoundError:
+        print(f"[red]Error: El archivo '{filename}' no existe.[/red]")
+        sys.exit(1)
 
-    continue;
-    print 1;
-}
+    tokens = list(tokenize(text))
+    indexToken = 0
 
-"""
+    print("[bold green]Tokens obtenidos:[/bold green]")
+    print(tokens)
 
-tokens = list(tokenize(text))
-indexToken = 0
+    AST = RecursiveDescentParser(tokens, indexToken).program()
 
-print(tokens)
+    print("[bold blue]Árbol de sintaxis abstracta (AST):[/bold blue]")
+    print(AST)
 
-AST = RecursiveDescentParser(tokens, indexToken).program()
+    json_output = to_json(AST)
+    print("[bold magenta]JSON generado:[/bold magenta]")
+    print(json_output)
 
-print(AST)
+    save_to_json_file(AST, "ast_output.json")
 
-print(to_json(AST))
-save_to_json_file(AST, "ast_output.json")
+
+if __name__ == "__main__":
+    main()
