@@ -182,14 +182,20 @@ class RecursiveDescentParser:
             if self.next_token().type == "LPAREN":
                 return self.func_decl()
 
+        if self.current_token().value in {"var", "const"}:
+            return self.vardecl()
+
         if self.current_token().type == "IF":
             return self.if_stmt()
 
         if self.current_token().type == "WHILE":
             return self.while_stmt()
 
-        if self.current_token().value in {"var", "const"}:
-            return self.vardecl()
+        if self.current_token().type == "BREAK":
+            return self.break_stmt()
+
+        if self.current_token().type == "CONTINUE":
+            return self.continue_stmt()
 
         raise ValueError(f"El statement no es válido. {self.current_token()}")
 
@@ -303,6 +309,22 @@ class RecursiveDescentParser:
 
         statement = self.block()
         return WhileStmt(expression=expression, statement=statement)
+
+    def break_stmt(self) -> BreakStmt:
+        self.indexToken += 1  # Consumir 'BREAK'
+
+        if self.current_token().type != "SEMI":
+            raise ValueError("Se esperaba ';' después de 'break'.")
+        self.indexToken += 1  # Consumir ';'
+
+        return BreakStmt()
+
+    def continue_stmt(self) -> ContinueStmt:
+        self.indexToken += 1
+        if self.current_token().type != "SEMI":
+            raise ValueError("Se esperaba ';' después de 'continue'.")
+        self.indexToken += 1
+        return ContinueStmt()
 
     def return_stmt(self) -> ReturnStmt:
         self.indexToken += 1
