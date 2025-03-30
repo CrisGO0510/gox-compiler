@@ -15,3 +15,9 @@ def remove_none(d: Any) -> Any:
 def to_json(obj: Any, indent: int = 4) -> str:
     """Convierte un objeto de dataclass a JSON, eliminando valores None."""
     return json.dumps(remove_none(asdict(obj)), indent=indent)
+
+
+def save_to_json_file(obj: Any, filename: str = "ast_output.json") -> None:
+    """Guarda el objeto convertido en JSON en un archivo."""
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(to_json(obj))

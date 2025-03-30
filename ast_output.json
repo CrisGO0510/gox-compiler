@@ -1,0 +1,87 @@
+{
+    "statements": [
+        {
+            "id": "main",
+            "return_type": "int",
+            "statements": [
+                {
+                    "mut": "var",
+                    "id": "a",
+                    "type": "int",
+                    "assignment": "=",
+                    "expression": {
+                        "orterm": {
+                            "andterm": {
+                                "relTerm": {
+                                    "addTerm": {
+                                        "factor": {
+                                            "literal": "5"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "expression": {
+                        "orterm": {
+                            "andterm": {
+                                "relTerm": {
+                                    "addTerm": {
+                                        "factor": {
+                                            "id": "a"
+                                        }
+                                    }
+                                },
+                                "relSymbol": ">",
+                                "next": {
+                                    "relTerm": {
+                                        "addTerm": {
+                                            "factor": {
+                                                "literal": "0"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "if_statement": [
+                        {
+                            "expression": {
+                                "orterm": {
+                                    "andterm": {
+                                        "relTerm": {
+                                            "addTerm": {
+                                                "factor": {
+                                                    "id": "a"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "else_statement": []
+                },
+                {
+                    "expression": {
+                        "orterm": {
+                            "andterm": {
+                                "relTerm": {
+                                    "addTerm": {
+                                        "factor": {
+                                            "id": "c"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

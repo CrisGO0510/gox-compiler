@@ -1,7 +1,7 @@
 from lexer import tokenize
 from rich import print
 from parser import RecursiveDescentParser
-from serialize import to_json
+from serialize import save_to_json_file, to_json
 
 text = """
 const PI float = 3.1415;
@@ -45,3 +45,4 @@ AST = RecursiveDescentParser(tokens, indexToken).program()
 print(AST)
 
 print(to_json(AST))
+save_to_json_file(AST, "ast_output.json")
