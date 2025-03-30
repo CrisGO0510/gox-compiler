@@ -26,7 +26,7 @@ Al abrir el archivo en VS Code, selecciona la opción de ejecución disponible e
 Si prefieres ejecutarlo manualmente, usa el siguiente comando:
 
 ```sh
-python lexer.py archivo.gox
+python main.py archivo.gox
 ```
 
 Esto abrirá la terminal con el **analizador léxico (Lexer)**, el cual se encargará de descomponer el código en tokens.
@@ -58,6 +58,11 @@ Token(CLOSE_PAREN, ')', 2)
 Token(SEMICOLON, ';', 2)
 ```
 
+para ejecutar el lexer usamos
+```sh
+python lexer.py archivo.gox
+```
+
 ### ❌ **Captura de errores en el Lexer**
 
 Si hay un error léxico en el código, la terminal mostrará algo como:
@@ -73,4 +78,41 @@ Esto indica que en la línea 15 se encontró un carácter no válido (`%`).
 
 ## 🏗️ **Parser: Análisis de la estructura del código**
 
-El siguiente paso en la ejecución del código será el **Parser**, el cual analizará la estructura y sintaxis del código GOX basándose en los tokens generados por el **Lexer**.
+El **Parser** analiza la estructura del código GOX basándose en los tokens generados por el **Lexer** y construye el **AST** (Árbol de Sintaxis Abstracta). 
+
+Si el código es válido, se imprimirá el AST en formato JSON. 
+
+Ejemplo de salida:
+
+```json
+{
+    "statements": [
+        {
+            "type": "Vardecl",
+            "mut": "const",
+            "id": "PI",
+            "var_type": "float",
+            "assignment": "=",
+            "expression": {
+                "literal": "3.1415"
+            }
+        }
+    ]
+}
+```
+
+Si hay errores de sintaxis, se mostrará un mensaje indicando el problema y la línea afectada.
+```sh
+  File "/home/cris/Documents/Repo/gox-compiler/src/parser.py", line 254, in vardecl
+    raise ValueError(
+        f"El statement no terminó correctamente. Se esperaba ';'. {self.current_token().lineno}"
+    )
+ValueError: El statement no terminó correctamente. Se esperaba ';'. 10
+```
+---
+
+## 📄 **Serialización: Guardado del AST**
+
+El AST generado se guarda automáticamente en el archivo `ast_output.json`.
+
+---
