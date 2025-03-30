@@ -197,6 +197,9 @@ class RecursiveDescentParser:
         if self.current_token().type == "CONTINUE":
             return self.continue_stmt()
 
+        if self.current_token().type == "RETURN":
+            return self.return_stmt()
+
         raise ValueError(f"El statement no es válido. {self.current_token()}")
 
     def assignment(self) -> Assignment:
@@ -329,6 +332,11 @@ class RecursiveDescentParser:
     def return_stmt(self) -> ReturnStmt:
         self.indexToken += 1
         expression = self.expression()
+
+        if self.current_token().type != "SEMI":
+            raise ValueError("Se esperaba ';' después de 'continue'.")
+        self.indexToken += 1
+
         return ReturnStmt(expression=expression)
 
     def block(self) -> list[Statement]:
@@ -409,21 +417,28 @@ class RecursiveDescentParser:
         return AndTerm(relTerm=relTerm, relSymbol=relSymbol, next=next)
 
     def relTerm(self) -> RelTerm:
-        if self.next_token().type == "PLUS" or self.next_token().type == "MINUS":
-            addTerm = self.addTerm()
+        addTerm = self.addTerm()
+        symbol = None
+        nextAddTerm = None
 
+        if self.current_token().value in {"+", "-"}:
             symbol = self.current_token().value
             self.indexToken += 1
-
             nextAddTerm = self.relTerm()
 
-            return RelTerm(addTerm, symbol, nextAddTerm)
-        addTerm = self.addTerm()
-        return RelTerm(addTerm=addTerm)
+        return RelTerm(addTerm, symbol, nextAddTerm)
 
     def addTerm(self) -> AddTerm:
         factor = self.factor()
-        return AddTerm(factor=factor)
+        symbol = None
+        next = None
+
+        if self.current_token().value in {"*", "/"}:
+            symbol = self.current_token().value
+            self.indexToken += 1
+            next = self.addTerm()
+
+        return AddTerm(factor=factor, symbol=symbol, next=next)
 
     def factor(self) -> Factor:
         if self.current_token().type == "ID":

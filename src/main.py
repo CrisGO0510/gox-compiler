@@ -4,7 +4,7 @@ from parser import RecursiveDescentParser
 from serialize import to_json
 
 text = """
-continue;
+return 1 + 2 * 3 - 4 / 5;
 """
 
 tokens = list(tokenize(text))
