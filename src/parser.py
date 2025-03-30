@@ -200,6 +200,9 @@ class RecursiveDescentParser:
         if self.current_token().type == "RETURN":
             return self.return_stmt()
 
+        if self.current_token().type == "PRINT":
+            return self.print_stmt()
+
         raise ValueError(f"El statement no es válido. {self.current_token()}")
 
     def assignment(self) -> Assignment:
@@ -338,6 +341,16 @@ class RecursiveDescentParser:
         self.indexToken += 1
 
         return ReturnStmt(expression=expression)
+
+    def print_stmt(self) -> PrintStmt:
+        self.indexToken += 1
+        expression = self.expression()
+
+        if self.current_token().type != "SEMI":
+            raise ValueError("Se esperaba ';' después de 'print'.")
+        self.indexToken += 1
+
+        return PrintStmt(expression=expression)
 
     def block(self) -> list[Statement]:
         """Parsea un bloque de código entre llaves `{ ... }`."""
