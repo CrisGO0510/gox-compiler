@@ -1,4 +1,4 @@
-use super::{OneCharToken, Token, TokenType};
+use super::{OneCharToken, Token, TokenType, TwoCharToken};
 
 pub fn tokenize(text: &str) -> Vec<Token> {
     let mut index: usize = 0;
@@ -31,8 +31,23 @@ pub fn tokenize(text: &str) -> Vec<Token> {
                 position_char.to_string(),
                 lineno,
             ));
+            index += 1;
+            continue;
         }
 
+        if index + 1 < text.len() {
+            if let Some(token_type) =
+                TwoCharToken::is_two_char_token(position_char, text.chars().nth(index + 1).unwrap())
+            {
+                tokens.push(Token::new(
+                    TokenType::TwoChar(token_type),
+                    format!("{}{}", position_char, text.chars().nth(index + 1).unwrap()),
+                    lineno,
+                ));
+                index += 2;
+                continue;
+            }
+        }
         index += 1;
     }
 

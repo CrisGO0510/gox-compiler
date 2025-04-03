@@ -1,4 +1,4 @@
-use regex::Regex;
+//use regex::Regex;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Token {
@@ -74,6 +74,20 @@ impl OneCharToken {
             '}' => Some(OneCharToken::RBrace),
             ',' => Some(OneCharToken::Comma),
             '`' => Some(OneCharToken::Deref),
+            _ => None,
+        }
+    }
+}
+
+impl TwoCharToken {
+    pub fn is_two_char_token(char1: char, char2: char) -> Option<TwoCharToken> {
+        match (char1, char2) {
+            ('&', '&') => Some(TwoCharToken::Land),
+            ('|', '|') => Some(TwoCharToken::Lor),
+            ('<', '=') => Some(TwoCharToken::Le),
+            ('>', '=') => Some(TwoCharToken::Ge),
+            ('=', '=') => Some(TwoCharToken::Eq),
+            ('!', '=') => Some(TwoCharToken::Ne),
             _ => None,
         }
     }
