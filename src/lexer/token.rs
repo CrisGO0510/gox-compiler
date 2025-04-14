@@ -1,4 +1,4 @@
-//use regex::Regex;
+use regex::Regex;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Token {
@@ -24,6 +24,7 @@ pub enum TokenType {
     Identifier,
     Integer,
     Float,
+    Bool,
     EOF,
 }
 
@@ -65,7 +66,7 @@ impl OneCharToken {
             '/' => Some(OneCharToken::Divide),
             '<' => Some(OneCharToken::Lt),
             '>' => Some(OneCharToken::Gt),
-            '^' => Some(OneCharToken::Grow), // Corregí '&' por '^' ya que '&' no está en tu lista
+            '^' => Some(OneCharToken::Grow),
             '=' => Some(OneCharToken::Assign),
             ';' => Some(OneCharToken::Semi),
             '(' => Some(OneCharToken::LParen),
@@ -93,9 +94,22 @@ impl TwoCharToken {
     }
 }
 
-// // Expresiones regulares para los patrones
-// lazy_static::lazy_static! {
-//     pub static ref NAME_PAT: Regex = Regex::new(r"^[a-zA-Z_]\w*").unwrap();
-//     pub static ref FLOAT_PAT: Regex = Regex::new(r"^(\d+\.\d*)|(\d*\.\d+)").unwrap();
-//     pub static ref INT_PAT: Regex = Regex::new(r"^\d+").unwrap();
-// }
+impl TokenType {
+    pub fn from_literal(s: &str) -> Option<TokenType> {
+        let is_integer = Regex::new(r"^\d+$").unwrap();
+        let is_float = Regex::new(r"^\d+\.\d+$").unwrap();
+        let is_identifier = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").unwrap();
+
+        if s == "true" || s == "false" {
+            Some(TokenType::Bool)
+        } else if is_integer.is_match(s) {
+            Some(TokenType::Integer)
+        } else if is_float.is_match(s) {
+            Some(TokenType::Float)
+        } else if is_identifier.is_match(s) {
+            Some(TokenType::Identifier)
+        } else {
+            None
+        }
+    }
+}
