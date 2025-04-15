@@ -21,11 +21,43 @@ impl Token {
 pub enum TokenType {
     TwoChar(TwoCharToken),
     OneChar(OneCharToken),
+    Literal(LiteralType),
+    ControlKeyword(ControlKeyword),
+    DeclarationKeyword(DeclarationKeyword),
+    BuiltinKeyword(BuiltinKeyword),
     Identifier,
+    EOF,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LiteralType {
     Integer,
     Float,
     Bool,
-    EOF,
+    Char,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ControlKeyword {
+    If,
+    Else,
+    While,
+    Break,
+    Continue,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DeclarationKeyword {
+    Var,
+    Const,
+    Func,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BuiltinKeyword {
+    Print,
+    Return,
+    Import,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -55,6 +87,7 @@ pub enum OneCharToken {
     RBrace,
     Comma,
     Deref,
+    Not,
 }
 
 impl OneCharToken {
@@ -75,6 +108,7 @@ impl OneCharToken {
             '}' => Some(OneCharToken::RBrace),
             ',' => Some(OneCharToken::Comma),
             '`' => Some(OneCharToken::Deref),
+            '!' => Some(OneCharToken::Not),
             _ => None,
         }
     }
@@ -99,17 +133,29 @@ impl TokenType {
         let is_integer = Regex::new(r"^\d+$").unwrap();
         let is_float = Regex::new(r"^\d+\.\d+$").unwrap();
         let is_identifier = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").unwrap();
+        let is_char = Regex::new(r"^'.'$").unwrap();
 
-        if s == "true" || s == "false" {
-            Some(TokenType::Bool)
-        } else if is_integer.is_match(s) {
-            Some(TokenType::Integer)
-        } else if is_float.is_match(s) {
-            Some(TokenType::Float)
-        } else if is_identifier.is_match(s) {
-            Some(TokenType::Identifier)
-        } else {
-            None
+        match s.to_lowercase().as_str() {
+            "if" => Some(TokenType::ControlKeyword(ControlKeyword::If)),
+            "else" => Some(TokenType::ControlKeyword(ControlKeyword::Else)),
+            "while" => Some(TokenType::ControlKeyword(ControlKeyword::While)),
+            "break" => Some(TokenType::ControlKeyword(ControlKeyword::Break)),
+            "continue" => Some(TokenType::ControlKeyword(ControlKeyword::Continue)),
+
+            "var" => Some(TokenType::DeclarationKeyword(DeclarationKeyword::Var)),
+            "const" => Some(TokenType::DeclarationKeyword(DeclarationKeyword::Const)),
+            "func" => Some(TokenType::DeclarationKeyword(DeclarationKeyword::Func)),
+
+            "print" => Some(TokenType::BuiltinKeyword(BuiltinKeyword::Print)),
+            "return" => Some(TokenType::BuiltinKeyword(BuiltinKeyword::Return)),
+            "import" => Some(TokenType::BuiltinKeyword(BuiltinKeyword::Import)),
+
+            s if s == "true" || s == "false" => Some(TokenType::Literal(LiteralType::Bool)),
+            s if is_integer.is_match(s) => Some(TokenType::Literal(LiteralType::Integer)),
+            s if is_float.is_match(s) => Some(TokenType::Literal(LiteralType::Float)),
+            s if is_char.is_match(s) => Some(TokenType::Literal(LiteralType::Char)),
+            s if is_identifier.is_match(s) => Some(TokenType::Identifier),
+            _ => None,
         }
     }
 }

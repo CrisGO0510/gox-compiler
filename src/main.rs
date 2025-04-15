@@ -3,7 +3,7 @@ mod lexer;
 fn main() {
     println!("Hello, world2!");
 
-    let text = "2 && 1";
+    let text = "hola && 21 > 'a' <= true;";
 
     println!("{}, {:?}", text, text.chars());
 

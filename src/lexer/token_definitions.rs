@@ -5,49 +5,65 @@ pub fn tokenize(text: &str) -> Vec<Token> {
     let mut tokens: Vec<Token> = Vec::new();
     let mut lineno: usize = 1;
 
-    let mut position_char: char;
+    let position_char = |index: usize| text.chars().nth(index);
 
     loop {
-        if text.chars().nth(index).is_none() {
-            break;
+        let current_char = match position_char(index) {
+            Some(c) => c,
+            None => break,
         };
 
-        position_char = text.chars().nth(index).unwrap();
-
-        if position_char == '\n' {
+        if current_char == '\n' {
             index += 1;
             lineno += 1;
             continue;
         }
 
-        if position_char.is_whitespace() {
+        if current_char.is_whitespace() {
             index += 1;
             continue;
         }
 
-        if let Some(token_type) = OneCharToken::is_one_char_token(position_char) {
-            tokens.push(Token::new(
-                TokenType::OneChar(token_type),
-                position_char.to_string(),
-                lineno,
-            ));
-            index += 1;
-            continue;
-        }
-
-        if index + 1 < text.len() {
-            if let Some(token_type) =
-                TwoCharToken::is_two_char_token(position_char, text.chars().nth(index + 1).unwrap())
-            {
+        if let (Some(c1), Some(c2)) = (position_char(index), position_char(index + 1)) {
+            if let Some(token_type) = TwoCharToken::is_two_char_token(c1, c2) {
                 tokens.push(Token::new(
                     TokenType::TwoChar(token_type),
-                    format!("{}{}", position_char, text.chars().nth(index + 1).unwrap()),
+                    format!("{}{}", c1, c2),
                     lineno,
                 ));
                 index += 2;
                 continue;
             }
         }
+
+        if let Some(token_type) = OneCharToken::is_one_char_token(current_char) {
+            tokens.push(Token::new(
+                TokenType::OneChar(token_type),
+                current_char.to_string(),
+                lineno,
+            ));
+            index += 1;
+            continue;
+        }
+
+        let mut literal = String::new();
+        while let Some(c) = position_char(index) {
+            if c.is_alphanumeric() || c == '_' || c == '\'' {
+                literal.push(c);
+                index += 1;
+            } else {
+                break;
+            }
+        }
+
+        if !literal.is_empty() {
+            if let Some(token_type) = TokenType::from_literal(&literal) {
+                tokens.push(Token::new(token_type, literal, lineno));
+                continue;
+            }
+        }
+
+        println!("Unknown character: {}", current_char);
         index += 1;
     }
 
