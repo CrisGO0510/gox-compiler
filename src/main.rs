@@ -1,13 +1,13 @@
+use std::fs;
 mod lexer;
+mod utils;
 
 fn main() {
-    println!("Hello, world2!");
+    let file_path = "./gox_examples/ejemplo.gox";
 
-    let text = "hola && 21 > 'a' <= true;";
+    let text = fs::read_to_string(file_path).expect("No se pudo leer el archivo");
 
-    println!("{}, {:?}", text, text.chars());
-
-    let tokens = lexer::tokenize(text);
+    let tokens = lexer::tokenize(&text);
 
     for token in tokens {
         println!("{:?}", token);

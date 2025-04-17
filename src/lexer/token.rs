@@ -27,6 +27,7 @@ pub enum TokenType {
     BuiltinKeyword(BuiltinKeyword),
     Identifier,
     EOF,
+    Illegal,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

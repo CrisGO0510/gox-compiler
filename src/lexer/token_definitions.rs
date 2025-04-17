@@ -1,4 +1,5 @@
 use super::{OneCharToken, Token, TokenType, TwoCharToken};
+use crate::utils::error_enum::{Error, print_error};
 
 pub fn tokenize(text: &str) -> Vec<Token> {
     let mut index: usize = 0;
@@ -25,6 +26,34 @@ pub fn tokenize(text: &str) -> Vec<Token> {
         }
 
         if let (Some(c1), Some(c2)) = (position_char(index), position_char(index + 1)) {
+            if c1 == '/' && c2 == '/' {
+                index += 2;
+                while let Some(c) = position_char(index) {
+                    if c == '\n' {
+                        lineno += 1;
+                        index += 1;
+                        break;
+                    }
+                    index += 1;
+                }
+                continue;
+            }
+
+            if c1 == '/' && c2 == '*' {
+                index += 2;
+                while let (Some(c1), Some(c2)) = (position_char(index), position_char(index + 1)) {
+                    if c1 == '*' && c2 == '/' {
+                        index += 2;
+                        break;
+                    }
+                    if c1 == '\n' {
+                        lineno += 1;
+                    }
+                    index += 1;
+                }
+                continue;
+            }
+
             if let Some(token_type) = TwoCharToken::is_two_char_token(c1, c2) {
                 tokens.push(Token::new(
                     TokenType::TwoChar(token_type),
@@ -48,7 +77,7 @@ pub fn tokenize(text: &str) -> Vec<Token> {
 
         let mut literal = String::new();
         while let Some(c) = position_char(index) {
-            if c.is_alphanumeric() || c == '_' || c == '\'' {
+            if c.is_alphanumeric() || c == '_' || c == '\'' || c == '.' {
                 literal.push(c);
                 index += 1;
             } else {
@@ -61,9 +90,18 @@ pub fn tokenize(text: &str) -> Vec<Token> {
                 tokens.push(Token::new(token_type, literal, lineno));
                 continue;
             }
+
+            tokens.push(Token::new(TokenType::Illegal, literal.clone(), lineno));
+            print_error(Error::UnknownLiteral(literal.clone()));
+            continue;
         }
 
-        println!("Unknown character: {}", current_char);
+        tokens.push(Token::new(
+            TokenType::Illegal,
+            current_char.to_string(),
+            lineno,
+        ));
+        print_error(Error::UnknownCharacter(current_char));
         index += 1;
     }
 
