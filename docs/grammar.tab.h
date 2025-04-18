@@ -54,50 +54,49 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    VAR = 258,                     /* VAR  */
-    CONST = 259,                   /* CONST  */
-    FUNC = 260,                    /* FUNC  */
-    IF = 261,                      /* IF  */
-    ELSE = 262,                    /* ELSE  */
-    WHILE = 263,                   /* WHILE  */
-    BREAK = 264,                   /* BREAK  */
-    CONTINUE = 265,                /* CONTINUE  */
+    IF = 258,                      /* IF  */
+    ELSE = 259,                    /* ELSE  */
+    WHILE = 260,                   /* WHILE  */
+    BREAK = 261,                   /* BREAK  */
+    CONTINUE = 262,                /* CONTINUE  */
+    VAR = 263,                     /* VAR  */
+    CONST = 264,                   /* CONST  */
+    FUNC = 265,                    /* FUNC  */
     PRINT = 266,                   /* PRINT  */
     RETURN = 267,                  /* RETURN  */
     IMPORT = 268,                  /* IMPORT  */
-    INT = 269,                     /* INT  */
-    FLOAT = 270,                   /* FLOAT  */
-    CHAR = 271,                    /* CHAR  */
-    BOOL = 272,                    /* BOOL  */
-    INTEGER_LITERAL = 273,         /* INTEGER_LITERAL  */
-    FLOAT_LITERAL = 274,           /* FLOAT_LITERAL  */
-    CHAR_LITERAL = 275,            /* CHAR_LITERAL  */
-    BOOL_LITERAL = 276,            /* BOOL_LITERAL  */
-    IDENTIFIER = 277,              /* IDENTIFIER  */
-    ASSIGN = 278,                  /* ASSIGN  */
-    SEMI = 279,                    /* SEMI  */
-    COMMA = 280,                   /* COMMA  */
-    LPAR = 281,                    /* LPAR  */
-    RPAR = 282,                    /* RPAR  */
-    LBRACE = 283,                  /* LBRACE  */
-    RBRACE = 284,                  /* RBRACE  */
+    INTEGER_LITERAL = 269,         /* INTEGER_LITERAL  */
+    FLOAT_LITERAL = 270,           /* FLOAT_LITERAL  */
+    CHAR_LITERAL = 271,            /* CHAR_LITERAL  */
+    TRUE = 272,                    /* TRUE  */
+    FALSE = 273,                   /* FALSE  */
+    ID = 274,                      /* ID  */
+    INT = 275,                     /* INT  */
+    FLOAT = 276,                   /* FLOAT  */
+    CHAR = 277,                    /* CHAR  */
+    BOOL = 278,                    /* BOOL  */
+    LE = 279,                      /* LE  */
+    GE = 280,                      /* GE  */
+    EQ = 281,                      /* EQ  */
+    NE = 282,                      /* NE  */
+    LAND = 283,                    /* LAND  */
+    LOR = 284,                     /* LOR  */
     PLUS = 285,                    /* PLUS  */
     MINUS = 286,                   /* MINUS  */
     TIMES = 287,                   /* TIMES  */
     DIVIDE = 288,                  /* DIVIDE  */
-    GROW = 289,                    /* GROW  */
-    LT = 290,                      /* LT  */
-    GT = 291,                      /* GT  */
-    LE = 292,                      /* LE  */
-    GE = 293,                      /* GE  */
-    EQ = 294,                      /* EQ  */
-    NE = 295,                      /* NE  */
-    LAND = 296,                    /* LAND  */
-    LOR = 297,                     /* LOR  */
-    NOT = 298,                     /* NOT  */
+    LT = 289,                      /* LT  */
+    GT = 290,                      /* GT  */
+    GROW = 291,                    /* GROW  */
+    ASSIGN = 292,                  /* ASSIGN  */
+    SEMI = 293,                    /* SEMI  */
+    COMMA = 294,                   /* COMMA  */
+    LPAREN = 295,                  /* LPAREN  */
+    RPAREN = 296,                  /* RPAREN  */
+    LBRACE = 297,                  /* LBRACE  */
+    RBRACE = 298,                  /* RBRACE  */
     DEREF = 299,                   /* DEREF  */
-    UMINUS = 300,                  /* UMINUS  */
-    EOF = 301                      /* EOF  */
+    NOT = 300                      /* NOT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -106,13 +105,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 9 "grammar.y"
+#line 11 "grammar.y"
 
-    int    intval;
-    float  floatval;
-    char*  strval;
+    int intval;
+    float floatval;
+    char charval;
+    bool boolval;
+    char* id;
 
-#line 116 "grammar.tab.h"
+#line 117 "grammar.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -1,3 +1,13 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "grammar.tab.h"
+
+extern int yylex(); // Declaración de la función yylex
+extern int yyerror(const char *s); // Declaración de la función yyerror
+%}
+
 %union {
     int intval;
     float floatval;
@@ -49,13 +59,21 @@
 %token DEREF      // `
 %token NOT        // !
 
-/* Fin de archivo */
-%token EOF
+// /* Fin de archivo */
+// %token End_Of_File
 
+/* Definición de precedencia y asociatividad */
+
+%left LOR
+%left LAND
+%left LT GT LE GE EQ NE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left GROW
 %%
 
 program:
-    statements EOF
+    statements
     ;
 
 statements:
@@ -172,5 +190,4 @@ literal:
     | TRUE
     | FALSE
     ;
-
 %%
