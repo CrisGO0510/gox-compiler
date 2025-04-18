@@ -5,7 +5,7 @@
 const PI float = 3.1415;
 var radius int = 10;
 
- func main(a float, b float) float {
+func main(a float, b float) float {
      var x float = 5;
      var y float = 10;
      var z float;
