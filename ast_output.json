@@ -1,54 +1,60 @@
 {
     "statements": [
         {
-            "mut": "const",
-            "id": "PI",
-            "type": "float",
-            "assignment": "=",
-            "expression": {
-                "orterm": {
-                    "andterm": {
-                        "relTerm": {
-                            "addTerm": {
-                                "factor": {
-                                    "literal": "3.1415"
+            "id": "prueba",
+            "parameters": {
+                "id": "hola",
+                "type": "int"
+            },
+            "return_type": "int",
+            "statements": [
+                {
+                    "mut": "var",
+                    "id": "x",
+                    "type": "int",
+                    "assignment": "=",
+                    "expression": {
+                        "orterm": {
+                            "andterm": {
+                                "relTerm": {
+                                    "addTerm": {
+                                        "factor": {
+                                            "literal": "3"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "expression": {
+                        "orterm": {
+                            "andterm": {
+                                "relTerm": {
+                                    "addTerm": {
+                                        "factor": {
+                                            "id": "hola"
+                                        }
+                                    },
+                                    "symbol": "+",
+                                    "next": {
+                                        "addTerm": {
+                                            "factor": {
+                                                "id": "x"
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        },
-        {
-            "mut": "var",
-            "id": "radius",
-            "type": "int",
-            "assignment": "=",
-            "expression": {
-                "orterm": {
-                    "andterm": {
-                        "relTerm": {
-                            "addTerm": {
-                                "factor": {
-                                    "literal": "10"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ]
         },
         {
             "id": "main",
-            "parameters": {
-                "id": "a",
-                "type": "float",
-                "next": {
-                    "id": "b",
-                    "type": "float"
-                }
-            },
-            "return_type": "float",
+            "return_type": "int",
             "statements": [
                 {
                     "mut": "var",
@@ -61,7 +67,7 @@
                                 "relTerm": {
                                     "addTerm": {
                                         "factor": {
-                                            "literal": "5"
+                                            "literal": "5.0"
                                         }
                                     }
                                 }
@@ -72,7 +78,7 @@
                 {
                     "mut": "var",
                     "id": "y",
-                    "type": "float",
+                    "type": "int",
                     "assignment": "=",
                     "expression": {
                         "orterm": {
@@ -80,7 +86,22 @@
                                 "relTerm": {
                                     "addTerm": {
                                         "factor": {
-                                            "literal": "10"
+                                            "id": "prueba",
+                                            "arguments": [
+                                                {
+                                                    "orterm": {
+                                                        "andterm": {
+                                                            "relTerm": {
+                                                                "addTerm": {
+                                                                    "factor": {
+                                                                        "literal": "5"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -89,209 +110,13 @@
                     }
                 },
                 {
-                    "mut": "var",
-                    "id": "z",
-                    "type": "float"
-                }
-            ]
-        },
-        {
-            "id": "main",
-            "return_type": "int",
-            "statements": [
-                {
-                    "mut": "var",
-                    "id": "result",
-                    "type": "float"
-                },
-                {
                     "expression": {
                         "orterm": {
                             "andterm": {
                                 "relTerm": {
                                     "addTerm": {
                                         "factor": {
-                                            "id": "radius"
-                                        }
-                                    }
-                                },
-                                "relSymbol": ">",
-                                "next": {
-                                    "relTerm": {
-                                        "addTerm": {
-                                            "factor": {
-                                                "literal": "0"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "if_statement": [
-                        {
-                            "location": {
-                                "id": "result"
-                            },
-                            "symbol": "=",
-                            "expression": {
-                                "orterm": {
-                                    "andterm": {
-                                        "relTerm": {
-                                            "addTerm": {
-                                                "factor": {
-                                                    "id": "area",
-                                                    "arguments": [
-                                                        {
-                                                            "orterm": {
-                                                                "andterm": {
-                                                                    "relTerm": {
-                                                                        "addTerm": {
-                                                                            "factor": {
-                                                                                "id": "radius"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "expression": {
-                                "orterm": {
-                                    "andterm": {
-                                        "relTerm": {
-                                            "addTerm": {
-                                                "factor": {
-                                                    "id": "result"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ],
-                    "else_statement": [
-                        {
-                            "expression": {
-                                "orterm": {
-                                    "andterm": {
-                                        "relTerm": {
-                                            "addTerm": {
-                                                "factor": {
-                                                    "unary_expression": {
-                                                        "literal": "1"
-                                                    },
-                                                    "unary_op": "-"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    "expression": {
-                        "orterm": {
-                            "andterm": {
-                                "relTerm": {
-                                    "addTerm": {
-                                        "factor": {
-                                            "id": "result"
-                                        }
-                                    }
-                                },
-                                "relSymbol": ">",
-                                "next": {
-                                    "relTerm": {
-                                        "addTerm": {
-                                            "factor": {
-                                                "literal": "50"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "statement": [
-                        {
-                            "location": {
-                                "id": "result"
-                            },
-                            "symbol": "=",
-                            "expression": {
-                                "orterm": {
-                                    "andterm": {
-                                        "relTerm": {
-                                            "addTerm": {
-                                                "factor": {
-                                                    "id": "result"
-                                                }
-                                            },
-                                            "symbol": "-",
-                                            "next": {
-                                                "addTerm": {
-                                                    "factor": {
-                                                        "literal": "1"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "expression": {
-                                "orterm": {
-                                    "andterm": {
-                                        "relTerm": {
-                                            "addTerm": {
-                                                "factor": {
-                                                    "id": "result"
-                                                }
-                                            }
-                                        },
-                                        "relSymbol": "==",
-                                        "next": {
-                                            "relTerm": {
-                                                "addTerm": {
-                                                    "factor": {
-                                                        "literal": "55"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            "if_statement": [
-                                {}
-                            ],
-                            "else_statement": []
-                        }
-                    ]
-                },
-                {},
-                {
-                    "expression": {
-                        "orterm": {
-                            "andterm": {
-                                "relTerm": {
-                                    "addTerm": {
-                                        "factor": {
-                                            "literal": "1"
+                                            "id": "y"
                                         }
                                     }
                                 }

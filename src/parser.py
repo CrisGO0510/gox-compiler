@@ -18,7 +18,9 @@ class Vardecl:
     type: Optional[str] = None
     assignment: Optional[Literal["="]] = None
     expression: Optional[Expression] = field(default_factory=lambda: None)
-
+# #____________________
+#     initialized: bool = False  # Indica si la variable ha sido inicializada
+# #___________________
 
 @dataclass
 class FuncDecl:

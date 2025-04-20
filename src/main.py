@@ -3,6 +3,7 @@ from lexer import tokenize
 from rich import print
 from parser import RecursiveDescentParser
 from serialize import save_to_json_file, to_json
+from check import Checker
 
 
 def main():
@@ -32,6 +33,13 @@ def main():
 
     print("[bold blue]Árbol de sintaxis abstracta (AST):[/bold blue]")
     print(AST)
+
+    try:
+        Checker.check(AST)
+        print("[bold green]✔ Análisis semántico exitoso[/bold green]")
+    except Exception as e:
+        print(f"[red]❌ Error semántico:[/red] {e}")
+        sys.exit(1)
 
     json_output = to_json(AST)
     print("[bold magenta]JSON generado:[/bold magenta]")

@@ -6,10 +6,11 @@ const PI float = 3.1415;
 var radius int = 10;
 
  func main(a float, b float) float {
-     var x float = 5;
-     var y float = 10;
+     var x float = 5.0;
+     var y float = 10.0;
      var z float;
-     }
+     return x + y + a + b;
+}
 
 func main() int{
     var result float;
