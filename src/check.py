@@ -4,6 +4,7 @@ from symtab import Symtab
 from typesys import typenames, check_binop, check_unaryop
 from dataclasses import dataclass
 from typing import Union
+from error import *
 
 
 @dataclass
@@ -35,25 +36,28 @@ class Checker:
         env.add(node.id, node)
         if node.expression:
             expr_type = self.visit(node.expression, env)
-            if not node.type and node.mut == "const":
-                node.type = expr_type
-            elif node.type and node.type != expr_type:
-                raise TypeError(
-                    f"[Error] Tipo incompatible en declaración de variable '{node.id}'"
-                )
+            if not node.type and node.mut == "var":
+                ErrorManager.print(ErrorType.UNTYPED_VARIABLE, node.lineno)
+
+            if node.type and node.type != expr_type:
+                ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno)
+
+            if node.mut == "const" and not node.expression:
+                ErrorManager.print(ErrorType.UNINITIALIZED_CONSTANT, node.lineno)
+
+            node.type = expr_type
 
     def visit_Assignment(self, node: Assignment, env: Symtab):
         var = env.get(node.location.id)
         if not var:
-            raise NameError(f"[Error] Variable no declarada: {node.location.id}")
+            ErrorManager.print(ErrorType.UNINITIALIZED_VARIABLE, node.lineno)
+
         if var.mut == "const":
-            raise TypeError(f"[Error] No se puede asignar a constante '{var.id}'")
+            ErrorManager.print(ErrorType.CONSTANT_ASSIGNMENT, node.lineno)
+
         expr_type = self.visit(node.expression, env)
         if var.type != expr_type:
-            raise TypeError(f"[Error] Asignación de tipo incorrecto a '{var.id}'")
-
-        # Marcar como inicializada
-        var.initialized = True
+            ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno)
 
     def visit_Literal(self, node, env: Symtab):
         v = node.value
@@ -64,11 +68,10 @@ class Checker:
         elif isinstance(v, float):
             return "float"
         elif isinstance(v, str):
-            # Validar si es un carácter de escape válido
             if v in {"\\n"} or len(v) == 1:
                 return "char"
         else:
-            raise TypeError(f"[Error] Literal desconocido: {v!r}")
+            ErrorManager.print(ErrorType.UNKNOWN_LITERAL, node.lineno)
 
     def visit_PrintStmt(self, node: PrintStmt, env: Symtab):
         self.visit(node.expression, env)
@@ -76,7 +79,7 @@ class Checker:
     def visit_IfStmt(self, node: IfStmt, env: Symtab):
         cond_type = self.visit(node.expression, env)
         if cond_type != "bool":
-            raise TypeError("[Error] Condición del if no es booleana")
+            ErrorManager.print(ErrorType.NON_BOOLEAN_CONDITION, node.lineno)
         for stmt in node.if_statement:
             self.visit(stmt, env)
         for stmt in node.else_statement:
@@ -85,7 +88,7 @@ class Checker:
     def visit_WhileStmt(self, node: WhileStmt, env: Symtab):
         cond_type = self.visit(node.expression, env)
         if cond_type != "bool":
-            raise TypeError("[Error] Condición del while no es booleana")
+            ErrorManager.print(ErrorType.NON_BOOLEAN_CONDITION, node.lineno)
         for stmt in node.statement:
             self.visit(stmt, env)
 
@@ -98,9 +101,7 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.orSymbol, left, right)
             if result is None:
-                raise TypeError(
-                    f"[Error] Operador '{node.orSymbol}' incompatible entre {left} y {right}"
-                )
+                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
             return result
         return left
 
@@ -110,9 +111,7 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.andSymbol, left, right)
             if result is None:
-                raise TypeError(
-                    f"[Error] Operador '{node.andSymbol}' incompatible entre {left} y {right}"
-                )
+                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
             return result
         return left
 
@@ -122,9 +121,7 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.relSymbol, left, right)
             if result is None:
-                raise TypeError(
-                    f"[Error] Operador '{node.relSymbol}' incompatible entre {left} y {right}"
-                )
+                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
             return result
         return left
 
@@ -134,9 +131,7 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.symbol, left, right)
             if result is None:
-                raise TypeError(
-                    f"[Error] Operador '{node.symbol}' incompatible entre {left} y {right}"
-                )
+                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
             return result
         return left
 
@@ -146,9 +141,7 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.symbol, left, right)
             if result is None:
-                raise TypeError(
-                    f"[Error] Operador '{node.symbol}' incompatible entre {left} y {right}"
-                )
+                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
             return result
         return left
 
@@ -160,7 +153,7 @@ class Checker:
         if node.id:
             decl = env.get(node.id)
             if not decl:
-                raise NameError(f"[Error] Variable o función no declarada: {node.id}")
+                ErrorManager.print(ErrorType.UNINITIALIZED_VARIABLE, node.lineno)
 
             # Verificar si la variable ha sido inicializada (si no es función)
             if isinstance(decl, Vardecl):
@@ -168,52 +161,49 @@ class Checker:
                     if (
                         not env.is_global_scope()
                     ):  # Solo permitimos uso no inicializado si es global
-                        raise NameError(
-                            f"[Error] Variable '{node.id}' usada sin inicializar"
+                        ErrorManager.print(
+                            ErrorType.UNINITIALIZED_VARIABLE, node.lineno
                         )
+                return decl.type
 
             # Si es una llamada a función
             if node.arguments:
-                if not isinstance(decl, FuncDecl):
-                    raise TypeError(f"[Error] '{node.id}' no es una función.")
-
                 # Recorremos los argumentos pasados y esperados
-                actual_args = []
-                formal = decl.parameters
                 arg_exprs = node.arguments
                 param = decl.parameters
 
                 for i, expr in enumerate(arg_exprs):
                     if not param:
-                        raise TypeError(
-                            f"[Error] Número incorrecto de argumentos en llamada a '{node.id}'"
+                        ErrorManager.print(
+                            ErrorType.INVALID_ARGUMENT_COUNT, node.lineno
                         )
+                        return decl.return_type
+
                     arg_type = self.visit(expr, env)
                     if arg_type != param.type:
-                        raise TypeError(
-                            f"[Error] Argumento {i + 1} en llamada a '{node.id}': esperado '{param.type}', recibido '{arg_type}'"
+                        ErrorManager.print(
+                            ErrorType.ARGUMENT_TYPE_MISMATCH, node.lineno
                         )
+                        return decl.return_type
+
                     param = param.next
 
                 if param:
-                    raise TypeError(
-                        f"[Error] Número incorrecto de argumentos en llamada a '{node.id}'"
-                    )
+                    ErrorManager.print(ErrorType.INVALID_ARGUMENT_COUNT, node.lineno)
 
                 return decl.return_type
 
-            return decl.type
+            return decl.type  # TODO: Verificar como se llama el return
 
         if node.unary_expression:
             inner_type = self.visit(node.unary_expression, env)
             result = check_unaryop(node.unary_op, inner_type)
             if result is None:
-                raise TypeError(
-                    f"[Error] Operador unario '{node.unary_op}' incompatible con tipo {inner_type}"
-                )
+                ErrorManager.print(ErrorType.INVALID_UNARY_OPERATION, node.lineno)
             return result
 
-        raise TypeError("[Error] Factor inválido")
+        ErrorManager.print(ErrorType.UNKNOWN_FACTOR, node.lineno)
+        return None
 
     def _parse_literal_value(self, val):
         if val == "true":
@@ -229,7 +219,7 @@ class Checker:
     def visit_FuncDecl(self, node: FuncDecl, env: Symtab):
         # 1. Registrar la función en el entorno global
         if env.get(node.id):
-            raise TypeError(f"[Error] Redefinición de función '{node.id}'")
+            ErrorManager.print(ErrorType.FUNCTION_REDEFINITION, node.lineno)
 
         env.add(node.id, node)
 
@@ -240,9 +230,8 @@ class Checker:
         current_param = node.parameters
         while current_param:
             if local_env.contains(current_param.id):
-                raise NameError(f"[Error] Parámetro duplicado: {current_param.id}")
+                ErrorManager.print(ErrorType.DUPLICATE_PARAMETER, node.lineno)
             vardecl = Vardecl(mut="var", id=current_param.id, type=current_param.type)
-            vardecl.initialized = True
             local_env.add(current_param.id, vardecl)
             current_param = current_param.next
 
@@ -252,16 +241,14 @@ class Checker:
             if isinstance(stmt, ReturnStmt):
                 return_type = self.visit(stmt, local_env)
                 if return_type != node.return_type:
-                    raise TypeError(
-                        f"[Error] La función '{node.id}' debe retornar '{node.return_type}', pero retornó '{return_type}'"
-                    )
+                    ErrorManager.print(ErrorType.MISMATCH_RETURN_TYPE, node.lineno)
                 return_found = True
             else:
                 self.visit(stmt, local_env)
 
         # 5. Verificar que haya return si no es void
-        if node.return_type != "void" and not return_found:
-            raise TypeError(f"[Error] La función '{node.id}' debe tener un return.")
+        if not return_found:
+            raise ErrorManager.print(ErrorType.MISSING_RETURN, node.lineno)
 
     def visit_ContinueStmt(self, node, env: Symtab):
         pass
