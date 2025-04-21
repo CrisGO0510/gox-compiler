@@ -231,7 +231,7 @@ class Checker:
         while current_param:
             if local_env.contains(current_param.id):
                 ErrorManager.print(ErrorType.DUPLICATE_PARAMETER, node.lineno)
-            vardecl = Vardecl(mut="var", id=current_param.id, type=current_param.type)
+            vardecl = Vardecl(mut="var", id=current_param.id, type=current_param.type, lineno=node.lineno)
             local_env.add(current_param.id, vardecl)
             current_param = current_param.next
 

@@ -21,13 +21,14 @@ class ErrorType(Enum):
     DUPLICATE_PARAMETER = "Parámetro duplicado"
     MISMATCH_RETURN_TYPE = "La función retorna un tipo diferente al declarado."
     MISSING_RETURN = "La función debe tener un return."
-    
+
 
 class ErrorManager:
     _errorCount = 0
 
+    @classmethod
     def print(cls, error_type: ErrorType, lineno: int):
         RED = "\033[91m"
         RESET = "\033[0m"
         cls._errorCount += 1
-        print(f"{RED}Error en la línea {lineno}: {error_type.type}{RESET}")
+        print(f"{RED}Error en la línea {lineno}: {error_type.value}{RESET}")

@@ -6,6 +6,7 @@ from lexer import Token
 
 @dataclass
 class Assignment:
+    lineno: int
     location: Location
     symbol: Literal["="]
     expression: Expression
@@ -13,17 +14,22 @@ class Assignment:
 
 @dataclass
 class Vardecl:
+    lineno: int
     mut: Literal["var", "const"]
     id: str
     type: Optional[str] = None
     assignment: Optional[Literal["="]] = None
     expression: Optional[Expression] = field(default_factory=lambda: None)
+
+
 # #____________________
 #     initialized: bool = False  # Indica si la variable ha sido inicializada
 # #___________________
 
+
 @dataclass
 class FuncDecl:
+    lineno: int
     id: str
     parameters: Parameters
     return_type: str
@@ -32,6 +38,7 @@ class FuncDecl:
 
 @dataclass
 class IfStmt:
+    lineno: int
     expression: Expression
     if_statement: List[Statement] = field(default_factory=list)
     else_statement: List[Statement] = field(default_factory=list)
@@ -39,32 +46,38 @@ class IfStmt:
 
 @dataclass
 class WhileStmt:
+    lineno: int
     expression: Expression
     statement: List[Statement] = field(default_factory=list)
 
 
 @dataclass
 class BreakStmt:
+    lineno: int
     pass
 
 
 @dataclass
 class ContinueStmt:
+    lineno: int
     pass
 
 
 @dataclass
 class ReturnStmt:
+    lineno: int
     expression: Expression
 
 
 @dataclass
 class PrintStmt:
+    lineno: int
     expression: Expression
 
 
 @dataclass
 class Parameters:
+    lineno: int
     id: str
     type: str
     next: Optional[Parameters] = None
@@ -72,6 +85,7 @@ class Parameters:
 
 @dataclass
 class Location:
+    lineno: int
     id: Optional[str] = None
     expression: Optional[Expression] = None
 
@@ -86,6 +100,7 @@ class Location:
 
 @dataclass
 class Expression:
+    lineno: int
     orterm: OrTerm
     orSymbol: Optional[str] = None
     next: Optional[OrTerm] = None
@@ -93,6 +108,7 @@ class Expression:
 
 @dataclass
 class OrTerm:
+    lineno: int
     andterm: AndTerm
     andSymbol: Optional[str] = None
     next: Optional[AndTerm] = None
@@ -100,6 +116,7 @@ class OrTerm:
 
 @dataclass
 class AndTerm:
+    lineno: int
     relTerm: RelTerm
     relSymbol: Optional[str] = None
     next: Optional[RelTerm] = None
@@ -107,6 +124,7 @@ class AndTerm:
 
 @dataclass
 class RelTerm:
+    lineno: int
     addTerm: AddTerm
     symbol: Optional[str] = None
     next: Optional[AddTerm] = None
@@ -114,6 +132,7 @@ class RelTerm:
 
 @dataclass
 class AddTerm:
+    lineno: int
     factor: Factor
     symbol: Optional[str] = None
     next: Optional[Factor] = None
@@ -121,6 +140,7 @@ class AddTerm:
 
 @dataclass
 class Factor:
+    lineno: int
     literal: Optional[str] = None
     type: Optional[str] = None
     id: Optional[str] = None
@@ -132,6 +152,7 @@ class Factor:
 
 @dataclass
 class Arguments:
+    lineno: int
     expression: Expression
     next: Optional[Arguments] = None
 
@@ -151,6 +172,7 @@ Statement = Union[
 
 @dataclass
 class Program:
+    lineno: int
     statements: List[Statement]
 
 
@@ -175,7 +197,7 @@ class RecursiveDescentParser:
                 f"El programa no terminó correctamente. {self.current_token().lineno}"
             )
 
-        return Program(program)
+        return Program(statements=program, lineno=self.current_token().lineno)
 
     def statement(self) -> Statement:
         if self.token_type() == "ID":
@@ -222,7 +244,12 @@ class RecursiveDescentParser:
             )
         self.indexToken += 1
 
-        return Assignment(location=location, symbol="=", expression=expression)
+        return Assignment(
+            location=location,
+            symbol="=",
+            expression=expression,
+            lineno=self.current_token().lineno,
+        )
 
     def vardecl(self) -> Vardecl:
         mut = self.current_token().value
@@ -259,7 +286,12 @@ class RecursiveDescentParser:
         self.indexToken += 1
 
         return Vardecl(
-            id=id, mut=mut, type=type, assignment=assignment, expression=expression
+            id=id,
+            mut=mut,
+            type=type,
+            assignment=assignment,
+            expression=expression,
+            lineno=self.current_token().lineno,
         )
 
     def func_decl(self) -> FuncDecl:
@@ -297,7 +329,11 @@ class RecursiveDescentParser:
         statements = self.block()
 
         return FuncDecl(
-            id=id, parameters=parameters, return_type=return_type, statements=statements
+            id=id,
+            parameters=parameters,
+            return_type=return_type,
+            statements=statements,
+            lineno=self.current_token().lineno,
         )
 
     def if_stmt(self) -> IfStmt:
@@ -326,6 +362,7 @@ class RecursiveDescentParser:
             expression=expression,
             if_statement=if_statement,
             else_statement=else_statement,
+            lineno=self.current_token().lineno,
         )
 
     def while_stmt(self) -> WhileStmt:
@@ -339,7 +376,11 @@ class RecursiveDescentParser:
         self.indexToken += 1
 
         statement = self.block()
-        return WhileStmt(expression=expression, statement=statement)
+        return WhileStmt(
+            expression=expression,
+            statement=statement,
+            lineno=self.current_token().lineno,
+        )
 
     def break_stmt(self) -> BreakStmt:
         self.indexToken += 1  # Consumir 'BREAK'
@@ -350,7 +391,7 @@ class RecursiveDescentParser:
             )
         self.indexToken += 1  # Consumir ';'
 
-        return BreakStmt()
+        return BreakStmt(lineno=self.current_token().lineno)
 
     def continue_stmt(self) -> ContinueStmt:
         self.indexToken += 1
@@ -359,7 +400,7 @@ class RecursiveDescentParser:
                 "Se esperaba ';' después de 'continue'.", self.current_token().lineno
             )
         self.indexToken += 1
-        return ContinueStmt()
+        return ContinueStmt(lineno=self.current_token().lineno)
 
     def return_stmt(self) -> ReturnStmt:
         self.indexToken += 1
@@ -371,7 +412,7 @@ class RecursiveDescentParser:
             )
         self.indexToken += 1
 
-        return ReturnStmt(expression=expression)
+        return ReturnStmt(expression=expression, lineno=self.current_token().lineno)
 
     def print_stmt(self) -> PrintStmt:
         self.indexToken += 1
@@ -383,7 +424,7 @@ class RecursiveDescentParser:
             )
         self.indexToken += 1
 
-        return PrintStmt(expression=expression)
+        return PrintStmt(expression=expression, lineno=self.current_token().lineno)
 
     def block(self) -> list[Statement]:
         """Parsea un bloque de código entre llaves `{ ... }`."""
@@ -422,7 +463,9 @@ class RecursiveDescentParser:
             self.indexToken += 1
             next = self.parameters()
 
-        return Parameters(id=id, type=type, next=next)
+        return Parameters(
+            id=id, type=type, next=next, lineno=self.current_token().lineno
+        )
 
     def arguments(self) -> list:
         args = []
@@ -451,7 +494,12 @@ class RecursiveDescentParser:
             self.indexToken += 1
             next = self.expression()
 
-        return Expression(orterm=orterm, orSymbol=orSymbol, next=next)
+        return Expression(
+            orterm=orterm,
+            orSymbol=orSymbol,
+            next=next,
+            lineno=self.current_token().lineno,
+        )
 
     def orterm(self) -> OrTerm:
         andterm = self.andterm()
@@ -466,6 +514,7 @@ class RecursiveDescentParser:
             andterm=andterm,
             andSymbol=andSymbol,
             next=next,
+            lineno=self.current_token().lineno,
         )
 
     def andterm(self) -> AndTerm:
@@ -483,7 +532,12 @@ class RecursiveDescentParser:
             self.indexToken += 1
             next = self.andterm()
 
-        return AndTerm(relTerm=relTerm, relSymbol=relSymbol, next=next)
+        return AndTerm(
+            relTerm=relTerm,
+            relSymbol=relSymbol,
+            next=next,
+            lineno=self.current_token().lineno,
+        )
 
     def relTerm(self) -> RelTerm:
         addTerm = self.addTerm()
@@ -495,7 +549,12 @@ class RecursiveDescentParser:
             self.indexToken += 1
             nextAddTerm = self.relTerm()
 
-        return RelTerm(addTerm, symbol, nextAddTerm)
+        return RelTerm(
+            addTerm=addTerm,
+            symbol=symbol,
+            next=nextAddTerm,
+            lineno=self.current_token().lineno,
+        )
 
     def addTerm(self) -> AddTerm:
         factor = self.factor()
@@ -507,7 +566,9 @@ class RecursiveDescentParser:
             self.indexToken += 1
             next = self.addTerm()
 
-        return AddTerm(factor=factor, symbol=symbol, next=next)
+        return AddTerm(
+            factor=factor, symbol=symbol, next=next, lineno=self.current_token().lineno
+        )
 
     def factor(self) -> Factor:
         if self.token_type() == "ID":
@@ -522,18 +583,24 @@ class RecursiveDescentParser:
                     raise ValueError("Se esperaba un ')'.", self.current_token().lineno)
                 self.indexToken += 1
 
-            return Factor(id=id, arguments=arguments)
+            return Factor(
+                id=id, arguments=arguments, lineno=self.current_token().lineno
+            )
 
         if self.current_token().value in {"+", "-", "^"}:
             unary_op = self.current_token().value
             self.indexToken += 1
             factor = self.factor()
-            return Factor(unary_expression=factor, unary_op=unary_op)
+            return Factor(
+                unary_expression=factor,
+                unary_op=unary_op,
+                lineno=self.current_token().lineno,
+            )
 
         if self.token_type() in {"INTEGER", "FLOAT", "CHAR", "BOOL"}:
             literal = self.current_token().value
             self.indexToken += 1
-            return Factor(literal=literal)
+            return Factor(literal=literal, lineno=self.current_token().lineno)
 
         else:
             raise ValueError("Factor no puede ser vacío.", self.current_token().lineno)

@@ -1,6 +1,6 @@
 func prueba(hola int) int {
    var x int = 3;
-   return hola + x;
+   //return hola + x;
 }
 
 
