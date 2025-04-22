@@ -24,7 +24,14 @@ class Checker:
 
     def visit_program(self, node: Program, env: Symtab):
         for stmt in node.statements:
-            self.visit(stmt, env)
+            if isinstance(
+                stmt, (ReturnStmt, BreakStmt, ContinueStmt, IfStmt, WhileStmt)
+            ):
+                ErrorManager.print(
+                    ErrorType.INVALID_GLOBAL_STATEMENT, stmt.lineno, type(stmt).__name__
+                )
+            else:
+                self.visit(stmt, env)
 
     def visit(self, node, env: Symtab):
         method_name = f"visit_{type(node).__name__}"
@@ -211,11 +218,10 @@ class Checker:
             if result is None:
                 ErrorManager.print(ErrorType.INVALID_UNARY_OPERATION, node.lineno)
             return result
-        
+
         if node.expression:
             inner_type = self.visit(node.expression, env)
             return inner_type
-
 
         ErrorManager.print(ErrorType.UNKNOWN_FACTOR, node.lineno)
         return None

@@ -22,17 +22,28 @@ class ErrorType(Enum):
     DUPLICATE_PARAMETER = "Parámetro duplicado"
     MISMATCH_RETURN_TYPE = "La función retorna un tipo diferente al declarado."
     MISSING_RETURN = "La función debe tener un return."
+    INVALID_GLOBAL_STATEMENT = (
+        "Este tipo de statement no puede estar en el ámbito global."
+    )
 
 
 class ErrorManager:
     _errorCount = 0
 
     @classmethod
-    def print(cls, error_type: ErrorType, lineno: int):
+    def print(cls, error_type: ErrorType, lineno: int, *extras):
         RED = "\033[91m"
         RESET = "\033[0m"
         cls._errorCount += 1
-        print(f"{RED}Error en la línea {lineno}: {error_type.value}{RESET}")
+
+        # Construir mensaje base
+        message = f"{RED}Error en la línea {lineno}: {error_type.value}"
+
+        # Agregar detalles adicionales si los hay
+        if extras:
+            message += " → " + " ".join(str(extra) for extra in extras)
+
+        print(f"{message}{RESET}")
 
     @classmethod
     def get_error_count(cls):
