@@ -252,7 +252,6 @@ class RecursiveDescentParser:
 
     def vardecl(self) -> Vardecl:
         mut = self.current_token().value
-        isConst = mut == "const"
         type = None
         assignment = None
         expression = None
@@ -265,10 +264,6 @@ class RecursiveDescentParser:
             if self.token_type() == "TYPE":
                 type = self.current_token().value
                 self.indexToken += 1
-            elif not isConst:
-                raise ValueError(
-                    f"La variable necesita un tipo de dato. {self.current_token().lineno}"
-                )
 
             if self.current_token().value == "=":
                 assignment = self.current_token().value
