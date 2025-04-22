@@ -1,12 +1,9 @@
-func prueba(hola int) int {
-   var x int = 3;
-   //return hola + x;
+/*func prueba(hola int) int {
+   return hola + x;
 }
-
-
+*/
 func main() int{
   var x float = 5.0;
-  var y int = prueba(5);
+  var y int = 10;
   return y;
 }
- 

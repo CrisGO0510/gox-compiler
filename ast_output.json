@@ -1,35 +1,30 @@
 {
-    "lineno": 12,
+    "lineno": 9,
     "statements": [
         {
-            "lineno": 7,
-            "id": "prueba",
-            "parameters": {
-                "lineno": 1,
-                "id": "hola",
-                "type": "int"
-            },
+            "lineno": 9,
+            "id": "main",
             "return_type": "int",
             "statements": [
                 {
-                    "lineno": 3,
+                    "lineno": 7,
                     "mut": "var",
                     "id": "x",
-                    "type": "int",
+                    "type": "float",
                     "assignment": "=",
                     "expression": {
-                        "lineno": 2,
+                        "lineno": 6,
                         "orterm": {
-                            "lineno": 2,
+                            "lineno": 6,
                             "andterm": {
-                                "lineno": 2,
+                                "lineno": 6,
                                 "relTerm": {
-                                    "lineno": 2,
+                                    "lineno": 6,
                                     "addTerm": {
-                                        "lineno": 2,
+                                        "lineno": 6,
                                         "factor": {
-                                            "lineno": 2,
-                                            "literal": "3"
+                                            "lineno": 6,
+                                            "literal": "5.0"
                                         }
                                     }
                                 }
@@ -38,51 +33,33 @@
                     }
                 },
                 {
-                    "lineno": 4,
+                    "lineno": 8,
+                    "mut": "var",
+                    "id": "y",
+                    "type": "int",
+                    "assignment": "=",
                     "expression": {
-                        "lineno": 3,
+                        "lineno": 7,
                         "orterm": {
-                            "lineno": 3,
+                            "lineno": 7,
                             "andterm": {
-                                "lineno": 3,
+                                "lineno": 7,
                                 "relTerm": {
-                                    "lineno": 3,
+                                    "lineno": 7,
                                     "addTerm": {
-                                        "lineno": 3,
+                                        "lineno": 7,
                                         "factor": {
-                                            "lineno": 3,
-                                            "id": "hola"
-                                        }
-                                    },
-                                    "symbol": "+",
-                                    "next": {
-                                        "lineno": 3,
-                                        "addTerm": {
-                                            "lineno": 3,
-                                            "factor": {
-                                                "lineno": 3,
-                                                "id": "x"
-                                            }
+                                            "lineno": 7,
+                                            "literal": "10"
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            ]
-        },
-        {
-            "lineno": 12,
-            "id": "main",
-            "return_type": "int",
-            "statements": [
+                },
                 {
                     "lineno": 9,
-                    "mut": "var",
-                    "id": "x",
-                    "type": "float",
-                    "assignment": "=",
                     "expression": {
                         "lineno": 8,
                         "orterm": {
@@ -95,75 +72,6 @@
                                         "lineno": 8,
                                         "factor": {
                                             "lineno": 8,
-                                            "literal": "5.0"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "lineno": 10,
-                    "mut": "var",
-                    "id": "y",
-                    "type": "int",
-                    "assignment": "=",
-                    "expression": {
-                        "lineno": 9,
-                        "orterm": {
-                            "lineno": 9,
-                            "andterm": {
-                                "lineno": 9,
-                                "relTerm": {
-                                    "lineno": 9,
-                                    "addTerm": {
-                                        "lineno": 9,
-                                        "factor": {
-                                            "lineno": 9,
-                                            "id": "prueba",
-                                            "arguments": [
-                                                {
-                                                    "lineno": 9,
-                                                    "orterm": {
-                                                        "lineno": 9,
-                                                        "andterm": {
-                                                            "lineno": 9,
-                                                            "relTerm": {
-                                                                "lineno": 9,
-                                                                "addTerm": {
-                                                                    "lineno": 9,
-                                                                    "factor": {
-                                                                        "lineno": 9,
-                                                                        "literal": "5"
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "lineno": 11,
-                    "expression": {
-                        "lineno": 10,
-                        "orterm": {
-                            "lineno": 10,
-                            "andterm": {
-                                "lineno": 10,
-                                "relTerm": {
-                                    "lineno": 10,
-                                    "addTerm": {
-                                        "lineno": 10,
-                                        "factor": {
-                                            "lineno": 10,
                                             "id": "y"
                                         }
                                     }

@@ -34,6 +34,12 @@ def main():
     print("[bold blue]Árbol de sintaxis abstracta (AST):[/bold blue]")
     print(AST)
 
+    json_output = to_json(AST)
+    print("[bold magenta]JSON generado:[/bold magenta]")
+    print(json_output)
+
+    save_to_json_file(AST, "ast_output.json")
+   
     try:
         Checker.check(AST)
         print("[bold green]✔ Análisis semántico exitoso[/bold green]")
@@ -41,11 +47,6 @@ def main():
         print(f"[red]❌ Error semántico:[/red] {e}")
         sys.exit(1)
 
-    json_output = to_json(AST)
-    print("[bold magenta]JSON generado:[/bold magenta]")
-    print(json_output)
-
-    save_to_json_file(AST, "ast_output.json")
 
 
 if __name__ == "__main__":

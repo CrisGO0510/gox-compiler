@@ -55,7 +55,7 @@ class Symtab:
 		o FuncDeclaration)
 		'''
 		if name in self.entries:
-			if self.entries[name].dtype != value.dtype:
+			if self.entries[name].type != value.type:
 				raise Symtab.SymbolConflictError()
 			else:
 				raise Symtab.SymbolDefinedError()

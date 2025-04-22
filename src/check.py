@@ -18,6 +18,7 @@ class Checker:
         check = cls()
         env = Symtab("global")
         check.visit_program(node, env)
+        ErrorManager.get_error_count()
         return check
 
     def visit_program(self, node: Program, env: Symtab):
@@ -153,7 +154,8 @@ class Checker:
         if node.id:
             decl = env.get(node.id)
             if not decl:
-                ErrorManager.print(ErrorType.UNINITIALIZED_VARIABLE, node.lineno)
+                ErrorManager.print(ErrorType.UNDECLARED_VARIABLE, node.lineno)
+                return None
 
             # Verificar si la variable ha sido inicializada (si no es función)
             if isinstance(decl, Vardecl):
@@ -164,6 +166,7 @@ class Checker:
                         ErrorManager.print(
                             ErrorType.UNINITIALIZED_VARIABLE, node.lineno
                         )
+                        print(f"{node.id}, {env}")
                 return decl.type
 
             # Si es una llamada a función
@@ -193,7 +196,7 @@ class Checker:
 
                 return decl.return_type
 
-            return decl.type  # TODO: Verificar como se llama el return
+            return decl.type
 
         if node.unary_expression:
             inner_type = self.visit(node.unary_expression, env)
@@ -231,24 +234,27 @@ class Checker:
         while current_param:
             if local_env.contains(current_param.id):
                 ErrorManager.print(ErrorType.DUPLICATE_PARAMETER, node.lineno)
-            vardecl = Vardecl(mut="var", id=current_param.id, type=current_param.type, lineno=node.lineno)
-            local_env.add(current_param.id, vardecl)
+            param = Parameters(
+                id=current_param.id,
+                type=current_param.type,
+                lineno=node.lineno,
+            )
+            local_env.add(current_param.id, param)
             current_param = current_param.next
 
         # 4. Analizar el cuerpo
         return_found = False
         for stmt in node.statements:
+            print(f"stmt: {stmt}")
+            return_type = self.visit(stmt, local_env)
             if isinstance(stmt, ReturnStmt):
-                return_type = self.visit(stmt, local_env)
                 if return_type != node.return_type:
                     ErrorManager.print(ErrorType.MISMATCH_RETURN_TYPE, node.lineno)
                 return_found = True
-            else:
-                self.visit(stmt, local_env)
 
         # 5. Verificar que haya return si no es void
         if not return_found:
-            raise ErrorManager.print(ErrorType.MISSING_RETURN, node.lineno)
+            ErrorManager.print(ErrorType.MISSING_RETURN, node.lineno)
 
     def visit_ContinueStmt(self, node, env: Symtab):
         pass

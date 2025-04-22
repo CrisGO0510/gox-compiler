@@ -5,10 +5,11 @@ from typing import List
 class ErrorType(Enum):
     MISSING_SEMICOLON = "Falta ';' al final de la instrucción."
     TYPE_MISMATCH = "Asignación de diferente tipo."
-    UNINITIALIZED_VARIABLE = "Variable no instanciada."
+    UNDECLARED_VARIABLE = "Variable no declarada."
+    UNINITIALIZED_VARIABLE = "La variable no está inicializada."
     CONSTANT_ASSIGNMENT = "No se puede asignar valor a una constante."
     UNTYPED_VARIABLE = "Variable sin tipo."
-    UNINITIALIZED_CONSTANT = "Una constante debe estar instanciada."
+    UNINITIALIZED_CONSTANT = "Una constante debe estar inicializada."
     UNKNOWN_LITERAL = "Literal desconocido."
     NON_BOOLEAN_CONDITION = "Condición del 'if' no booleana."
     LITERAL_TYPE_MISMATCH = "Incompatibilidad entre literales de diferente tipo."
@@ -32,3 +33,12 @@ class ErrorManager:
         RESET = "\033[0m"
         cls._errorCount += 1
         print(f"{RED}Error en la línea {lineno}: {error_type.value}{RESET}")
+
+    @classmethod
+    def get_error_count(cls):
+        RED = "\033[91m"
+        RESET = "\033[0m"
+        if cls._errorCount > 0:
+            print(f"{RED}Se encontraron {cls._errorCount} errores.{RESET}")
+        else:
+            print("No se encontraron errores.")
