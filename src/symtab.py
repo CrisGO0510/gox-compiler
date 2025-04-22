@@ -79,7 +79,7 @@ class Symtab:
 		table.add_column('value', style='bright_green')
 		
 		for k,v in self.entries.items():
-			value = f"{v.__class__.__name__}({v.name})"
+			value = f"{v.__class__.__name__}({v.id})"
 			table.add_row(k, value)
 		print(table, '\n')
 		
@@ -91,6 +91,7 @@ class Symtab:
 
 	def is_initialized(self, name: str) -> bool:
 		symbol = self.get(name)
+		#print(f"Symbol: {symbol}")
 		return hasattr(symbol, "initialized") and symbol.initialized
 
 	def is_global_scope(self) -> bool:

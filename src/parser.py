@@ -20,6 +20,7 @@ class Vardecl:
     type: Optional[str] = None
     assignment: Optional[Literal["="]] = None
     expression: Optional[Expression] = field(default_factory=lambda: None)
+    initialized: bool = False  # Indica si la variable ha sido inicializada
 
 
 @dataclass
@@ -227,7 +228,9 @@ class RecursiveDescentParser:
         raise ValueError(f"El statement no es válido. {self.current_token().lineno}")
 
     def assignment(self) -> Assignment:
-        location = Location(id=self.current_token().value)
+        location = Location(
+            id=self.current_token().value, lineno=self.current_token().lineno
+        )
         self.indexToken += 2
         expression = self.expression()
 

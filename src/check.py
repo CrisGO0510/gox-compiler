@@ -19,6 +19,7 @@ class Checker:
         env = Symtab("global")
         check.visit_program(node, env)
         ErrorManager.get_error_count()
+        env.print()
         return check
 
     def visit_program(self, node: Program, env: Symtab):
@@ -46,6 +47,9 @@ class Checker:
             if node.mut == "const" and not node.expression:
                 ErrorManager.print(ErrorType.UNINITIALIZED_CONSTANT, node.lineno)
 
+            if expr_type:
+                node.initialized = True
+
             node.type = expr_type
 
     def visit_Assignment(self, node: Assignment, env: Symtab):
@@ -57,6 +61,10 @@ class Checker:
             ErrorManager.print(ErrorType.CONSTANT_ASSIGNMENT, node.lineno)
 
         expr_type = self.visit(node.expression, env)
+
+        if expr_type:
+            var.initialized = True
+
         if var.type != expr_type:
             ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno)
 
@@ -166,7 +174,6 @@ class Checker:
                         ErrorManager.print(
                             ErrorType.UNINITIALIZED_VARIABLE, node.lineno
                         )
-                        print(f"{node.id}, {env}")
                 return decl.type
 
             # Si es una llamada a función
@@ -245,7 +252,6 @@ class Checker:
         # 4. Analizar el cuerpo
         return_found = False
         for stmt in node.statements:
-            print(f"stmt: {stmt}")
             return_type = self.visit(stmt, local_env)
             if isinstance(stmt, ReturnStmt):
                 if return_type != node.return_type:
