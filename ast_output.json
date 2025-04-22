@@ -1,8 +1,8 @@
 {
-    "lineno": 4,
+    "lineno": 10,
     "statements": [
         {
-            "lineno": 4,
+            "lineno": 6,
             "id": "prueba",
             "parameters": {
                 "lineno": 1,
@@ -64,6 +64,124 @@
                                                 "lineno": 3,
                                                 "id": "x"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "lineno": 10,
+            "id": "main",
+            "return_type": "int",
+            "statements": [
+                {
+                    "lineno": 8,
+                    "mut": "var",
+                    "id": "y",
+                    "type": "int",
+                    "assignment": "=",
+                    "expression": {
+                        "lineno": 7,
+                        "orterm": {
+                            "lineno": 7,
+                            "andterm": {
+                                "lineno": 7,
+                                "relTerm": {
+                                    "lineno": 7,
+                                    "addTerm": {
+                                        "lineno": 7,
+                                        "factor": {
+                                            "lineno": 7,
+                                            "literal": "5"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "initialized": false
+                },
+                {
+                    "lineno": 9,
+                    "expression": {
+                        "lineno": 8,
+                        "orterm": {
+                            "lineno": 8,
+                            "andterm": {
+                                "lineno": 8,
+                                "relTerm": {
+                                    "lineno": 8,
+                                    "addTerm": {
+                                        "lineno": 8,
+                                        "factor": {
+                                            "lineno": 8,
+                                            "id": "prueba",
+                                            "arguments": [
+                                                {
+                                                    "lineno": 8,
+                                                    "orterm": {
+                                                        "lineno": 8,
+                                                        "andterm": {
+                                                            "lineno": 8,
+                                                            "relTerm": {
+                                                                "lineno": 8,
+                                                                "addTerm": {
+                                                                    "lineno": 8,
+                                                                    "factor": {
+                                                                        "lineno": 8,
+                                                                        "id": "y"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "lineno": 8,
+                                                    "orterm": {
+                                                        "lineno": 8,
+                                                        "andterm": {
+                                                            "lineno": 8,
+                                                            "relTerm": {
+                                                                "lineno": 8,
+                                                                "addTerm": {
+                                                                    "lineno": 8,
+                                                                    "factor": {
+                                                                        "lineno": 8,
+                                                                        "literal": "10"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "lineno": 10,
+                    "expression": {
+                        "lineno": 9,
+                        "orterm": {
+                            "lineno": 9,
+                            "andterm": {
+                                "lineno": 9,
+                                "relTerm": {
+                                    "lineno": 9,
+                                    "addTerm": {
+                                        "lineno": 9,
+                                        "factor": {
+                                            "lineno": 9,
+                                            "literal": "0"
                                         }
                                     }
                                 }

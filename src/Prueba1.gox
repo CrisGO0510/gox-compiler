@@ -2,3 +2,9 @@ func prueba(hola int) int {
     var x int = 3;
     return hola + x;
 }
+
+func main() int {
+    var y int = 5;
+    print prueba(y, 10);
+    return 0;
+}

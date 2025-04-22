@@ -43,7 +43,6 @@ class Checker:
 
     def visit_Vardecl(self, node: Vardecl, env: Symtab):
         env.add(node.id, node)
-        print(f"Agregando {node}")
         if node.expression:
             expr_type = self.visit(node.expression, env)
             if not node.type and node.mut == "var":
@@ -52,12 +51,10 @@ class Checker:
             if node.type and node.type != expr_type:
                 ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno, node.id)
 
-            if expr_type:
-                node.initialized = True
-
+            node.initialized = True
             node.type = expr_type
-            
-        if node.mut == "const" :
+
+        if node.mut == "const" and node.expression is None:
             ErrorManager.print(
                 ErrorType.UNINITIALIZED_CONSTANT, node.lineno, node.id
             )

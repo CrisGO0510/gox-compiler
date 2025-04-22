@@ -79,10 +79,16 @@ class TestChecker(unittest.TestCase):
 
     def test_funcion_argumentos_invalidos(self):
         code = """
-        func prueba(hola int) int {
-            var x int = 3;
-            return hola + x;
-        }
+            func prueba(hola int) int {
+                var x int = 3;
+                return hola + x;
+            }
+
+            func main() int {
+                var y int = 5;
+                print prueba(y, 10);
+                return 0;
+            }
         """
         Checker.check(self.analizar(code))
         self.assertEqual(ErrorManager._errorCount, 1)
