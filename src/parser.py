@@ -146,6 +146,7 @@ class Factor:
     location: Optional[Location] = None
     unary_expression: Optional[Factor] = None
     unary_op: Optional[str] = None
+    expression: Optional[Expression] = None
 
 
 @dataclass
@@ -607,7 +608,7 @@ class RecursiveDescentParser:
                 raise ValueError(f"Se esperaba ')'. {self.current_token().lineno}")
             self.indexToken += 1  # Consumir ')'
             return Factor(
-                location=Location(expression=expr, lineno=self.current_token().lineno),
+                expression=expr,
                 lineno=self.current_token().lineno,
             )
 

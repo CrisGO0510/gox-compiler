@@ -19,7 +19,7 @@ class Checker:
         env = Symtab("global")
         check.visit_program(node, env)
         ErrorManager.get_error_count()
-        env.print()
+        # env.print()
         return check
 
     def visit_program(self, node: Program, env: Symtab):
@@ -211,6 +211,11 @@ class Checker:
             if result is None:
                 ErrorManager.print(ErrorType.INVALID_UNARY_OPERATION, node.lineno)
             return result
+        
+        if node.expression:
+            inner_type = self.visit(node.expression, env)
+            return inner_type
+
 
         ErrorManager.print(ErrorType.UNKNOWN_FACTOR, node.lineno)
         return None
