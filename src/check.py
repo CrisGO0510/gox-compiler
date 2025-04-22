@@ -120,12 +120,12 @@ class Checker:
         left = self.visit(node.orterm, env)
         if node.next:
             right = self.visit(node.next, env)
-            result = check_binop(node.orSymbol, left, right)
+            result = check_binop(node.symbol, left, right)
             if result is None:
                 ErrorManager.print(
                     ErrorType.LITERAL_TYPE_MISMATCH,
                     node.lineno,
-                    f"{left} {node.orSymbol} {right}",
+                    f"{left} {node.symbol} {right}",
                 )
             return result
         return left
@@ -134,12 +134,12 @@ class Checker:
         left = self.visit(node.andterm, env)
         if node.next:
             right = self.visit(node.next, env)
-            result = check_binop(node.andSymbol, left, right)
+            result = check_binop(node.symbol, left, right)
             if result is None:
                 ErrorManager.print(
                     ErrorType.LITERAL_TYPE_MISMATCH,
                     node.lineno,
-                    f"{left} {node.andSymbol} {right}",
+                    f"{left} {node.symbol} {right}",
                 )
             return result
         return left
@@ -148,12 +148,12 @@ class Checker:
         left = self.visit(node.relTerm, env)
         if node.next:
             right = self.visit(node.next, env)
-            result = check_binop(node.relSymbol, left, right)
+            result = check_binop(node.symbol, left, right)
             if result is None:
                 ErrorManager.print(
                     ErrorType.LITERAL_TYPE_MISMATCH,
                     node.lineno,
-                    f"{left} {node.relSymbol} {right}",
+                    f"{left} {node.symbol} {right}",
                 )
             return result
         return left
@@ -167,7 +167,7 @@ class Checker:
                 ErrorManager.print(
                     ErrorType.LITERAL_TYPE_MISMATCH,
                     node.lineno,
-                    f"{left} {node.relSymbol} {right}",
+                    f"{left} {node.symbol} {right}",
                 )
             return result
         return left
@@ -181,7 +181,7 @@ class Checker:
                 ErrorManager.print(
                     ErrorType.LITERAL_TYPE_MISMATCH,
                     node.lineno,
-                    f"{left} {node.relSymbol} {right}",
+                    f"{left} {node.symbol} {right}",
                 )
             return result
         return left

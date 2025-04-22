@@ -100,7 +100,7 @@ class Location:
 class Expression:
     lineno: int
     orterm: OrTerm
-    orSymbol: Optional[str] = None
+    symbol: Optional[str] = None
     next: Optional[OrTerm] = None
 
 
@@ -108,7 +108,7 @@ class Expression:
 class OrTerm:
     lineno: int
     andterm: AndTerm
-    andSymbol: Optional[str] = None
+    symbol: Optional[str] = None
     next: Optional[AndTerm] = None
 
 
@@ -116,7 +116,7 @@ class OrTerm:
 class AndTerm:
     lineno: int
     relTerm: RelTerm
-    relSymbol: Optional[str] = None
+    symbol: Optional[str] = None
     next: Optional[RelTerm] = None
 
 
@@ -480,55 +480,55 @@ class RecursiveDescentParser:
 
     def expression(self) -> Expression:
         orterm = self.orterm()
-        orSymbol = None
+        symbol = None
         next = None
 
         if self.token_type() == "LOR":
-            orSymbol = self.current_token().value
+            symbol = self.current_token().value
             self.indexToken += 1
             next = self.expression()
 
         return Expression(
             orterm=orterm,
-            orSymbol=orSymbol,
+            symbol=symbol,
             next=next,
             lineno=self.current_token().lineno,
         )
 
     def orterm(self) -> OrTerm:
         andterm = self.andterm()
-        andSymbol = None
+        symbol = None
         next = None
         if self.token_type() == "LAND":
-            andSymbol = self.current_token().value
+            symbol = self.current_token().value
             self.indexToken += 1
             next = self.orterm()
 
         return OrTerm(
             andterm=andterm,
-            andSymbol=andSymbol,
+            symbol=symbol,
             next=next,
             lineno=self.current_token().lineno,
         )
 
     def andterm(self) -> AndTerm:
         relTerm = self.relTerm()
-        relSymbol = None
+        symbol = None
         next = None
 
         if self.current_token().value in {"<", ">"}:
-            relSymbol = self.current_token().value
+            symbol = self.current_token().value
             self.indexToken += 1
             next = self.andterm()
 
         if self.current_token().value in {"==", "!=", "<=", ">="}:
-            relSymbol = self.current_token().value
+            symbol = self.current_token().value
             self.indexToken += 1
             next = self.andterm()
 
         return AndTerm(
             relTerm=relTerm,
-            relSymbol=relSymbol,
+            symbol=symbol,
             next=next,
             lineno=self.current_token().lineno,
         )

@@ -29,7 +29,11 @@ def main():
     # print("[bold green]Tokens obtenidos:[/bold green]")
     # print(tokens)
 
-    AST = RecursiveDescentParser(tokens, indexToken).program()
+    try:
+        AST = RecursiveDescentParser(tokens, indexToken).program()
+    except Exception as e:
+        print(f"[red]❌ Error de sintaxis:[/red] {e}")
+        sys.exit(1)
 
     # print("[bold blue]Árbol de sintaxis abstracta (AST):[/bold blue]")
     # print(AST)
