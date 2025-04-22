@@ -26,8 +26,8 @@ def main():
     tokens = list(tokenize(text))
     indexToken = 0
 
-    print("[bold green]Tokens obtenidos:[/bold green]")
-    print(tokens)
+    # print("[bold green]Tokens obtenidos:[/bold green]")
+    # print(tokens)
 
     AST = RecursiveDescentParser(tokens, indexToken).program()
 

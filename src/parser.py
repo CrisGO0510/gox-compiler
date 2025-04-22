@@ -234,8 +234,6 @@ class RecursiveDescentParser:
         self.indexToken += 2
         expression = self.expression()
 
-        print("expression", expression)
-
         if self.token_type() != "SEMI":
             raise ValueError(
                 f"El statement no terminó correctamente. Se esperaba ';'. {self.current_token().lineno}"
