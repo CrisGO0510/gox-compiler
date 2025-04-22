@@ -46,14 +46,15 @@ class Checker:
         if node.expression:
             expr_type = self.visit(node.expression, env)
             if not node.type and node.mut == "var":
-                ErrorManager.print(ErrorType.UNTYPED_VARIABLE, node.lineno)
+                ErrorManager.print(ErrorType.UNTYPED_VARIABLE, node.lineno, node.id)
 
             if node.type and node.type != expr_type:
-                ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno)
+                ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno, node.id)
 
             if node.mut == "const" and not node.expression:
-                ErrorManager.print(ErrorType.UNINITIALIZED_CONSTANT, node.lineno)
-
+                ErrorManager.print(
+                    ErrorType.UNINITIALIZED_CONSTANT, node.lineno, node.id
+                )
             if expr_type:
                 node.initialized = True
 
@@ -62,10 +63,10 @@ class Checker:
     def visit_Assignment(self, node: Assignment, env: Symtab):
         var = env.get(node.location.id)
         if not var:
-            ErrorManager.print(ErrorType.UNINITIALIZED_VARIABLE, node.lineno)
+            ErrorManager.print(ErrorType.UNINITIALIZED_VARIABLE, node.lineno, node.id)
 
         if var.mut == "const":
-            ErrorManager.print(ErrorType.CONSTANT_ASSIGNMENT, node.lineno)
+            ErrorManager.print(ErrorType.CONSTANT_ASSIGNMENT, node.lineno, node.id)
 
         expr_type = self.visit(node.expression, env)
 
@@ -73,7 +74,11 @@ class Checker:
             var.initialized = True
 
         if var.type != expr_type:
-            ErrorManager.print(ErrorType.TYPE_MISMATCH, node.lineno)
+            ErrorManager.print(
+                ErrorType.TYPE_MISMATCH,
+                node.lineno,
+                f"Tipo esperado: {var.type}, tipo encontrado: {expr_type}",
+            )
 
     def visit_Literal(self, node, env: Symtab):
         v = node.value
@@ -87,7 +92,7 @@ class Checker:
             if v in {"\\n"} or len(v) == 1:
                 return "char"
         else:
-            ErrorManager.print(ErrorType.UNKNOWN_LITERAL, node.lineno)
+            ErrorManager.print(ErrorType.UNKNOWN_LITERAL, node.lineno, v)
 
     def visit_PrintStmt(self, node: PrintStmt, env: Symtab):
         self.visit(node.expression, env)
@@ -95,7 +100,7 @@ class Checker:
     def visit_IfStmt(self, node: IfStmt, env: Symtab):
         cond_type = self.visit(node.expression, env)
         if cond_type != "bool":
-            ErrorManager.print(ErrorType.NON_BOOLEAN_CONDITION, node.lineno)
+            ErrorManager.print(ErrorType.NON_BOOLEAN_CONDITION, node.lineno, cond_type)
         for stmt in node.if_statement:
             self.visit(stmt, env)
         for stmt in node.else_statement:
@@ -104,7 +109,7 @@ class Checker:
     def visit_WhileStmt(self, node: WhileStmt, env: Symtab):
         cond_type = self.visit(node.expression, env)
         if cond_type != "bool":
-            ErrorManager.print(ErrorType.NON_BOOLEAN_CONDITION, node.lineno)
+            ErrorManager.print(ErrorType.NON_BOOLEAN_CONDITION, node.lineno, cond_type)
         for stmt in node.statement:
             self.visit(stmt, env)
 
@@ -117,7 +122,11 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.orSymbol, left, right)
             if result is None:
-                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
+                ErrorManager.print(
+                    ErrorType.LITERAL_TYPE_MISMATCH,
+                    node.lineno,
+                    f"{left} {node.orSymbol} {right}",
+                )
             return result
         return left
 
@@ -127,7 +136,11 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.andSymbol, left, right)
             if result is None:
-                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
+                ErrorManager.print(
+                    ErrorType.LITERAL_TYPE_MISMATCH,
+                    node.lineno,
+                    f"{left} {node.andSymbol} {right}",
+                )
             return result
         return left
 
@@ -137,7 +150,11 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.relSymbol, left, right)
             if result is None:
-                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
+                ErrorManager.print(
+                    ErrorType.LITERAL_TYPE_MISMATCH,
+                    node.lineno,
+                    f"{left} {node.relSymbol} {right}",
+                )
             return result
         return left
 
@@ -147,7 +164,11 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.symbol, left, right)
             if result is None:
-                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
+                ErrorManager.print(
+                    ErrorType.LITERAL_TYPE_MISMATCH,
+                    node.lineno,
+                    f"{left} {node.relSymbol} {right}",
+                )
             return result
         return left
 
@@ -157,7 +178,11 @@ class Checker:
             right = self.visit(node.next, env)
             result = check_binop(node.symbol, left, right)
             if result is None:
-                ErrorManager.print(ErrorType.LITERAL_TYPE_MISMATCH, node.lineno)
+                ErrorManager.print(
+                    ErrorType.LITERAL_TYPE_MISMATCH,
+                    node.lineno,
+                    f"{left} {node.relSymbol} {right}",
+                )
             return result
         return left
 
@@ -169,7 +194,7 @@ class Checker:
         if node.id:
             decl = env.get(node.id)
             if not decl:
-                ErrorManager.print(ErrorType.UNDECLARED_VARIABLE, node.lineno)
+                ErrorManager.print(ErrorType.UNDECLARED_VARIABLE, node.lineno, node.id)
                 return None
 
             # Verificar si la variable ha sido inicializada (si no es función)
@@ -179,7 +204,7 @@ class Checker:
                         not env.is_global_scope()
                     ):  # Solo permitimos uso no inicializado si es global
                         ErrorManager.print(
-                            ErrorType.UNINITIALIZED_VARIABLE, node.lineno
+                            ErrorType.UNINITIALIZED_VARIABLE, node.lineno, node.id
                         )
                 return decl.type
 
@@ -199,7 +224,9 @@ class Checker:
                     arg_type = self.visit(expr, env)
                     if arg_type != param.type:
                         ErrorManager.print(
-                            ErrorType.ARGUMENT_TYPE_MISMATCH, node.lineno
+                            ErrorType.ARGUMENT_TYPE_MISMATCH,
+                            node.lineno,
+                            f"Tipo esperado: {param.type}, tipo encontrado: {arg_type}",
                         )
                         return decl.return_type
 
@@ -223,7 +250,7 @@ class Checker:
             inner_type = self.visit(node.expression, env)
             return inner_type
 
-        ErrorManager.print(ErrorType.UNKNOWN_FACTOR, node.lineno)
+        ErrorManager.print(ErrorType.UNKNOWN_FACTOR, node.lineno, node.id)
         return None
 
     def _parse_literal_value(self, val):
@@ -240,7 +267,7 @@ class Checker:
     def visit_FuncDecl(self, node: FuncDecl, env: Symtab):
         # 1. Registrar la función en el entorno global
         if env.get(node.id):
-            ErrorManager.print(ErrorType.FUNCTION_REDEFINITION, node.lineno)
+            ErrorManager.print(ErrorType.FUNCTION_REDEFINITION, node.lineno, node.id)
 
         env.add(node.id, node)
 
@@ -251,7 +278,9 @@ class Checker:
         current_param = node.parameters
         while current_param:
             if local_env.contains(current_param.id):
-                ErrorManager.print(ErrorType.DUPLICATE_PARAMETER, node.lineno)
+                ErrorManager.print(
+                    ErrorType.DUPLICATE_PARAMETER, node.lineno, current_param.id
+                )
             param = Parameters(
                 id=current_param.id,
                 type=current_param.type,
@@ -266,7 +295,11 @@ class Checker:
             return_type = self.visit(stmt, local_env)
             if isinstance(stmt, ReturnStmt):
                 if return_type != node.return_type:
-                    ErrorManager.print(ErrorType.MISMATCH_RETURN_TYPE, node.lineno)
+                    ErrorManager.print(
+                        ErrorType.MISMATCH_RETURN_TYPE,
+                        node.lineno,
+                        f"Tipo esperado: {node.return_type}, tipo encontrado: {return_type}",
+                    )
                 return_found = True
 
         # 5. Verificar que haya return si no es void
