@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal, Union, List, Optional
 from lexer import Token
+from rich import print
 
 
 @dataclass
@@ -77,6 +78,7 @@ class Parameters:
     id: str
     type: str
     next: Optional[Parameters] = None
+    mut = "var"
 
 
 @dataclass
@@ -597,6 +599,17 @@ class RecursiveDescentParser:
             literal = self.current_token().value
             self.indexToken += 1
             return Factor(literal=literal, lineno=self.current_token().lineno)
+
+        if self.token_type() == "LPAREN":
+            self.indexToken += 1  # Consumir '('
+            expr = self.expression()
+            if self.token_type() != "RPAREN":
+                raise ValueError(f"Se esperaba ')'. {self.current_token().lineno}")
+            self.indexToken += 1  # Consumir ')'
+            return Factor(
+                location=Location(expression=expr, lineno=self.current_token().lineno),
+                lineno=self.current_token().lineno,
+            )
 
         else:
             raise ValueError("Factor no puede ser vacío.", self.current_token().lineno)

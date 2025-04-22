@@ -1,11 +1,6 @@
-func prueba(hola int) int {
-   var x int = 8;
-   return hola + x;
-}
-
-func main() int{
-  var x float = 5.0;
-  var y int;
-  y = 12;
-  return y;
+func mod(x int, y int) int {
+  x = 3;
+  y = 2;
+ 
+	return x - ( x / y ) * y;
 }

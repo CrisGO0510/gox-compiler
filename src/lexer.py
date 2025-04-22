@@ -31,7 +31,7 @@ ONE_CHAR = {
     "`": "DEREF",
 }
 
-NAME_PAT = re.compile(r"[a-zA-Z_]\w*")
+NAME_PAT = re.compile(r"`?[a-zA-Z_]\w*")
 FLOAT_PAT = re.compile(r"(\d+\.\d*)|(\d*\.\d+)")
 INT_PAT = re.compile(r"\d+")
 
