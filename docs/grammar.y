@@ -64,13 +64,12 @@ extern int yyerror(const char *s); // Declaración de la función yyerror
 
 /* Definición de precedencia y asociatividad */
 
-%left LOR           
-%left LAND          
-%nonassoc EQ NE     
-%nonassoc LT GT LE GE 
-%left PLUS MINUS    
-%left TIMES DIVIDE  
-%left GROW          
+%left LOR
+%left LAND
+%left LT GT LE GE EQ NE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left GROW
 %right UPLUS UMINUS UGROW
 %%
 
@@ -137,46 +136,49 @@ type:
     ;
 
 expression:
-      orterm
-    | expression LOR orterm
+    orterm
     ;
 
 orterm:
-      andterm
-    | orterm LAND andterm
+      orterm LOR andterm
+    | andterm
     ;
 
 andterm:
-      relterm
-    | andterm LT relterm
-    | andterm GT relterm
-    | andterm LE relterm
-    | andterm GE relterm
-    | andterm EQ relterm
-    | andterm NE relterm
+      andterm LAND relterm
+    | relterm
     ;
 
 relterm:
-      addterm
-    | relterm PLUS addterm
-    | relterm MINUS addterm
+      relterm LT addterm
+    | relterm GT addterm
+    | relterm LE addterm
+    | relterm GE addterm
+    | relterm EQ addterm
+    | relterm NE addterm
+    | addterm
     ;
 
 addterm:
-      factor
-    | addterm TIMES factor
-    | addterm DIVIDE factor
+      addterm PLUS multterm
+    | addterm MINUS multterm
+    | multterm
+    ;
+
+multterm:
+      multterm TIMES factor
+    | multterm DIVIDE factor
+    | factor
     ;
 
 factor:
       literal
-    | PLUS expression         %prec UPLUS
-    | MINUS expression        %prec UMINUS
-    | GROW expression         %prec UGROW
-    | LPAREN expression RPAREN
-    | type LPAREN expression RPAREN
-    | ID LPAREN arguments RPAREN
     | ID
+    | ID LPAREN arguments RPAREN
+    | LPAREN expression RPAREN
+    | PLUS factor %prec UPLUS
+    | MINUS factor %prec UMINUS
+    | factor GROW factor %prec UGROW
     ;
 
 arguments:
