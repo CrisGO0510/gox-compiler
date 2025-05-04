@@ -64,12 +64,14 @@ extern int yyerror(const char *s); // Declaración de la función yyerror
 
 /* Definición de precedencia y asociatividad */
 
-%left LOR
-%left LAND
-%left LT GT LE GE EQ NE
-%left PLUS MINUS
-%left TIMES DIVIDE
-%left GROW
+%left LOR           
+%left LAND          
+%nonassoc EQ NE     
+%nonassoc LT GT LE GE 
+%left PLUS MINUS    
+%left TIMES DIVIDE  
+%left GROW          
+%right UPLUS UMINUS UGROW
 %%
 
 program:
@@ -168,9 +170,9 @@ addterm:
 
 factor:
       literal
-    | PLUS expression
-    | MINUS expression
-    | GROW expression
+    | PLUS expression         %prec UPLUS
+    | MINUS expression        %prec UMINUS
+    | GROW expression         %prec UGROW
     | LPAREN expression RPAREN
     | type LPAREN expression RPAREN
     | ID LPAREN arguments RPAREN

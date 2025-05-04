@@ -96,7 +96,10 @@ extern int yydebug;
     LBRACE = 297,                  /* LBRACE  */
     RBRACE = 298,                  /* RBRACE  */
     DEREF = 299,                   /* DEREF  */
-    NOT = 300                      /* NOT  */
+    NOT = 300,                     /* NOT  */
+    UPLUS = 301,                   /* UPLUS  */
+    UMINUS = 302,                  /* UMINUS  */
+    UGROW = 303                    /* UGROW  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -113,7 +116,7 @@ union YYSTYPE
     bool boolval;
     char* id;
 
-#line 117 "grammar.tab.h"
+#line 120 "grammar.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
