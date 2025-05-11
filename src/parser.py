@@ -51,13 +51,11 @@ class WhileStmt:
 @dataclass
 class BreakStmt:
     lineno: int
-    pass
 
 
 @dataclass
 class ContinueStmt:
     lineno: int
-    pass
 
 
 @dataclass
