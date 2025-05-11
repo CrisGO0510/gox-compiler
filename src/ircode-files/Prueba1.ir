@@ -9,12 +9,12 @@ locals: {}
 ('RET',)
 
 FUNCTION::: area, ['a'], ['I'] F
-locals: {}
-('LOCAL_GET', 'a')
-('PRINTI',)
+locals: {'result': 'F'}
 ('GLOBAL_GET', 'PI')
 ('CONSTF', 3.3)
 ('DIVF',)
+('LOCAL_SET', 'result')
+('LOCAL_GET', 'result')
 ('RET',)
 
 FUNCTION::: _actual_main, [], [] I
