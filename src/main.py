@@ -1,9 +1,10 @@
 import sys
 from lexer import tokenize
 from rich import print
-from parser import RecursiveDescentParser
+from parser import Program, RecursiveDescentParser
 from serialize import save_to_json_file, to_json
 from check import Checker
+from ircode import IRCode
 
 
 def main():
@@ -50,6 +51,16 @@ def main():
     except Exception as e:
         print(f"[red]❌ Error semántico:[/red] {e}")
         sys.exit(1)
+
+    ircode_main(AST)
+
+
+def ircode_main(AST: Program):
+    print("[bold yellow]Código intermedio generado:[/bold yellow]")
+    ir = IRCode().gencode(AST).dump()
+
+    # with open("ir_output.txt", "w") as f:
+    #     f.write(str(ir))
 
 
 if __name__ == "__main__":
