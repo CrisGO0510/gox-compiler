@@ -10,6 +10,8 @@ locals: {}
 
 FUNCTION::: area, ['a'], ['I'] F
 locals: {}
+('LOCAL_GET', 'a')
+('PRINTI',)
 ('GLOBAL_GET', 'PI')
 ('CONSTF', 3.3)
 ('DIVF',)
