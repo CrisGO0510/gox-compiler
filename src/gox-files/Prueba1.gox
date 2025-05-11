@@ -4,7 +4,8 @@ func prueba(hola int, adios int) int {
 }
 
 func main() int {
-    var y int = 5;
+    var y int ;
+    y = 5;
     print prueba(y, 10);
     return 0;
 }
