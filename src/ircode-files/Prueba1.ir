@@ -1,0 +1,25 @@
+MODULE:::
+FUNCTION::: main, [], [] I
+locals: {}
+('CALL', '_actual_main')
+('RET',)
+
+FUNCTION::: prueba, ['hola', 'adios'], ['I', 'I'] I
+locals: {'x': 'I'}
+('CONSTI', 3)
+('LOCAL_SET', 'x')
+('LOCAL_GET', 'hola')
+('LOCAL_GET', 'x')
+('ADDI',)
+('RET',)
+
+FUNCTION::: _actual_main, [], [] I
+locals: {'y': 'I'}
+('CONSTI', 5)
+('LOCAL_SET', 'y')
+('LOCAL_GET', 'y')
+('CONSTI', 10)
+('CALL', 'prueba')
+('PRINTI',)
+('CONSTI', 0)
+('RET',)
