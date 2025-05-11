@@ -108,7 +108,7 @@ class Expression(ReprMixin):
     lineno: int
     orterm: OrTerm
     symbol: Optional[str] = None
-    next: Optional[OrTerm] = None
+    next: Optional[Expression] = None
 
 
 @dataclass(repr=False)
@@ -116,7 +116,7 @@ class OrTerm(ReprMixin):
     lineno: int
     andterm: AndTerm
     symbol: Optional[str] = None
-    next: Optional[AndTerm] = None
+    next: Optional[OrTerm] = None
 
 
 @dataclass(repr=False)
@@ -124,7 +124,7 @@ class AndTerm(ReprMixin):
     lineno: int
     relTerm: RelTerm
     symbol: Optional[str] = None
-    next: Optional[RelTerm] = None
+    next: Optional[AndTerm] = None
 
 
 @dataclass(repr=False)
@@ -132,7 +132,7 @@ class RelTerm(ReprMixin):
     lineno: int
     addTerm: AddTerm
     symbol: Optional[str] = None
-    next: Optional[AddTerm] = None
+    next: Optional[RelTerm] = None
 
 
 @dataclass(repr=False)
@@ -140,7 +140,7 @@ class AddTerm(ReprMixin):
     lineno: int
     factor: Factor
     symbol: Optional[str] = None
-    next: Optional[Factor] = None
+    next: Optional[AddTerm] = None
 
 
 @dataclass(repr=False)
@@ -405,7 +405,7 @@ class RecursiveDescentParser(ReprMixin):
 
         if self.token_type() != "SEMI":
             raise ValueError(
-                "Se esperaba ';' después de 'continue'.", self.current_token().lineno
+                "Se esperaba ';' después de 'return'.", self.current_token().lineno
             )
         self.indexToken += 1
 
@@ -484,12 +484,12 @@ class RecursiveDescentParser(ReprMixin):
     def expression(self) -> Expression:
         orterm = self.orterm()
         symbol = None
-        next: Optional[OrTerm] = None
+        next: Optional[Expression] = None
 
         if self.token_type() == "LOR":
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.orterm()
+            next = self.expression()
 
         return Expression(
             orterm=orterm,
@@ -501,11 +501,11 @@ class RecursiveDescentParser(ReprMixin):
     def orterm(self) -> OrTerm:
         andterm = self.andterm()
         symbol = None
-        next: Optional[AndTerm] = None
+        next: Optional[OrTerm] = None
         if self.token_type() == "LAND":
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.andterm()
+            next = self.orterm()
 
         return OrTerm(
             andterm=andterm,
@@ -517,17 +517,12 @@ class RecursiveDescentParser(ReprMixin):
     def andterm(self) -> AndTerm:
         relTerm = self.relTerm()
         symbol = None
-        next: Optional[RelTerm] = None
+        next: Optional[AndTerm] = None
 
-        if self.current_token().value in {"<", ">"}:
+        if self.current_token().value in {"<", ">", "==", "!=", "<=", ">="}:
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.relTerm()
-
-        if self.current_token().value in {"==", "!=", "<=", ">="}:
-            symbol = self.current_token().value
-            self.indexToken += 1
-            next = self.relTerm()
+            next = self.andterm()
 
         return AndTerm(
             relTerm=relTerm,
@@ -539,12 +534,12 @@ class RecursiveDescentParser(ReprMixin):
     def relTerm(self) -> RelTerm:
         addTerm = self.addTerm()
         symbol = None
-        next: Optional[AddTerm]  = None
+        next: Optional[RelTerm] = None
 
         if self.current_token().value in {"+", "-"}:
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.addTerm()
+            next = self.relTerm()
 
         return RelTerm(
             addTerm=addTerm,
@@ -556,12 +551,12 @@ class RecursiveDescentParser(ReprMixin):
     def addTerm(self) -> AddTerm:
         factor = self.factor()
         symbol = None
-        next: Optional[Factor] = None
+        next: Optional[AddTerm] = None
 
         if self.current_token().value in {"*", "/"}:
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.factor()
+            next = self.addTerm()
 
         return AddTerm(
             factor=factor, symbol=symbol, next=next, lineno=self.current_token().lineno
