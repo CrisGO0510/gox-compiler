@@ -37,9 +37,9 @@ class Vardecl(ReprMixin):
 class FuncDecl(ReprMixin):
     lineno: int
     id: str
-    parameters: Parameters
     return_type: str
     statements: List[Statement]
+    parameters: Optional[Parameters] = None
 
 
 @dataclass(repr=False)
@@ -149,18 +149,11 @@ class Factor(ReprMixin):
     literal: Optional[str] = None
     type: Optional[str] = None
     id: Optional[str] = None
-    arguments: Optional[Arguments] = None
+    arguments: Optional[List[Expression]] = None
     location: Optional[Location] = None
     unary_expression: Optional[Factor] = None
     unary_op: Optional[str] = None
     expression: Optional[Expression] = None
-
-
-@dataclass(repr=False)
-class Arguments(ReprMixin):
-    lineno: int
-    expression: Expression
-    next: Optional[Arguments] = None
 
 
 Statement = Union[
@@ -258,7 +251,10 @@ class RecursiveDescentParser(ReprMixin):
         )
 
     def vardecl(self) -> Vardecl:
-        mut = self.current_token().value
+        token_value = self.current_token().value
+        if token_value not in ("var", "const"):
+            raise ValueError(f"Expected 'var' or 'const', got {token_value}")
+        mut: Literal["var", "const"] = token_value
         type = None
         assignment = None
         expression = None
@@ -273,7 +269,7 @@ class RecursiveDescentParser(ReprMixin):
                 self.indexToken += 1
 
             if self.current_token().value == "=":
-                assignment = self.current_token().value
+                assignment = "="
                 self.indexToken += 1
                 expression = self.expression()
 
@@ -305,7 +301,7 @@ class RecursiveDescentParser(ReprMixin):
             raise ValueError(f"Se esperaba '('. {self.current_token().lineno}")
         self.indexToken += 1
 
-        parameters = None
+        parameters: Parameters | None = None
         if self.token_type() != "RPAREN":
             parameters = self.parameters()
 
@@ -468,7 +464,7 @@ class RecursiveDescentParser(ReprMixin):
             id=id, type=type, next=next, lineno=self.current_token().lineno
         )
 
-    def arguments(self) -> list:
+    def arguments(self) -> list[Expression]:
         args = []
 
         # Si el siguiente token es RPAREN, significa que no hay argumentos (caso vacío)
@@ -488,12 +484,12 @@ class RecursiveDescentParser(ReprMixin):
     def expression(self) -> Expression:
         orterm = self.orterm()
         symbol = None
-        next = None
+        next: Optional[OrTerm] = None
 
         if self.token_type() == "LOR":
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.expression()
+            next = self.orterm()
 
         return Expression(
             orterm=orterm,
@@ -505,11 +501,11 @@ class RecursiveDescentParser(ReprMixin):
     def orterm(self) -> OrTerm:
         andterm = self.andterm()
         symbol = None
-        next = None
+        next: Optional[AndTerm] = None
         if self.token_type() == "LAND":
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.orterm()
+            next = self.andterm()
 
         return OrTerm(
             andterm=andterm,
@@ -521,17 +517,17 @@ class RecursiveDescentParser(ReprMixin):
     def andterm(self) -> AndTerm:
         relTerm = self.relTerm()
         symbol = None
-        next = None
+        next: Optional[RelTerm] = None
 
         if self.current_token().value in {"<", ">"}:
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.andterm()
+            next = self.relTerm()
 
         if self.current_token().value in {"==", "!=", "<=", ">="}:
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.andterm()
+            next = self.relTerm()
 
         return AndTerm(
             relTerm=relTerm,
@@ -543,29 +539,29 @@ class RecursiveDescentParser(ReprMixin):
     def relTerm(self) -> RelTerm:
         addTerm = self.addTerm()
         symbol = None
-        nextAddTerm = None
+        next: Optional[AddTerm]  = None
 
         if self.current_token().value in {"+", "-"}:
             symbol = self.current_token().value
             self.indexToken += 1
-            nextAddTerm = self.relTerm()
+            next = self.addTerm()
 
         return RelTerm(
             addTerm=addTerm,
             symbol=symbol,
-            next=nextAddTerm,
+            next=next,
             lineno=self.current_token().lineno,
         )
 
     def addTerm(self) -> AddTerm:
         factor = self.factor()
         symbol = None
-        next = None
+        next: Optional[Factor] = None
 
         if self.current_token().value in {"*", "/"}:
             symbol = self.current_token().value
             self.indexToken += 1
-            next = self.addTerm()
+            next = self.factor()
 
         return AddTerm(
             factor=factor, symbol=symbol, next=next, lineno=self.current_token().lineno
