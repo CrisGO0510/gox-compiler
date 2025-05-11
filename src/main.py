@@ -1,4 +1,5 @@
 import sys
+from error import ErrorManager
 from lexer import tokenize
 from rich import print
 from parser import Program, RecursiveDescentParser
@@ -52,7 +53,8 @@ def main():
         print(f"[red]❌ Error semántico:[/red] {e}")
         sys.exit(1)
 
-    ircode_main(AST)
+    if ErrorManager.get_error_count():
+        ircode_main(AST)
 
 
 def ircode_main(AST: Program):

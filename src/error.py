@@ -46,10 +46,12 @@ class ErrorManager:
         print(f"{message}{RESET}")
 
     @classmethod
-    def get_error_count(cls):
+    def get_error_count(cls) -> bool:
         RED = "\033[91m"
         RESET = "\033[0m"
         if cls._errorCount > 0:
             print(f"{RED}Se encontraron {cls._errorCount} errores.{RESET}")
-        else:
-            print("No se encontraron errores.")
+            return False
+
+        print("No se encontraron errores.")
+        return True

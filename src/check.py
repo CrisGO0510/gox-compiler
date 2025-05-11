@@ -18,7 +18,6 @@ class Checker:
         check = cls()
         env = Symtab("global")
         check.visit_program(node, env)
-        ErrorManager.get_error_count()
         # env.print()
         return check
 
