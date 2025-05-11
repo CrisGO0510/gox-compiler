@@ -1,11 +1,10 @@
 {
-    "lineno": 29,
+    "lineno": 30,
     "statements": [
         {
             "lineno": 2,
             "mut": "const",
             "id": "PI",
-            "type": "float",
             "assignment": "=",
             "expression": {
                 "lineno": 1,
@@ -56,12 +55,16 @@
             "initialized": false
         },
         {
-            "lineno": 8,
+            "lineno": 9,
             "id": "area",
             "return_type": "float",
             "statements": [
                 {
                     "lineno": 6,
+                    "mut": "var",
+                    "id": "result",
+                    "type": "float",
+                    "assignment": "=",
                     "expression": {
                         "lineno": 5,
                         "orterm": {
@@ -88,6 +91,29 @@
                                 }
                             }
                         }
+                    },
+                    "initialized": false
+                },
+                {
+                    "lineno": 7,
+                    "expression": {
+                        "lineno": 6,
+                        "orterm": {
+                            "lineno": 6,
+                            "andterm": {
+                                "lineno": 6,
+                                "relTerm": {
+                                    "lineno": 6,
+                                    "addTerm": {
+                                        "lineno": 6,
+                                        "factor": {
+                                            "lineno": 6,
+                                            "id": "result"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             ],
@@ -98,44 +124,44 @@
             }
         },
         {
-            "lineno": 29,
+            "lineno": 30,
             "id": "main",
             "return_type": "int",
             "statements": [
                 {
-                    "lineno": 10,
+                    "lineno": 11,
                     "mut": "var",
                     "id": "result",
                     "type": "float",
                     "initialized": false
                 },
                 {
-                    "lineno": 17,
+                    "lineno": 18,
                     "expression": {
-                        "lineno": 10,
+                        "lineno": 11,
                         "orterm": {
-                            "lineno": 10,
+                            "lineno": 11,
                             "andterm": {
-                                "lineno": 10,
+                                "lineno": 11,
                                 "relTerm": {
-                                    "lineno": 10,
+                                    "lineno": 11,
                                     "addTerm": {
-                                        "lineno": 10,
+                                        "lineno": 11,
                                         "factor": {
-                                            "lineno": 10,
+                                            "lineno": 11,
                                             "id": "radius"
                                         }
                                     }
                                 },
                                 "symbol": ">",
                                 "next": {
-                                    "lineno": 10,
+                                    "lineno": 11,
                                     "relTerm": {
-                                        "lineno": 10,
+                                        "lineno": 11,
                                         "addTerm": {
-                                            "lineno": 10,
+                                            "lineno": 11,
                                             "factor": {
-                                                "lineno": 10,
+                                                "lineno": 11,
                                                 "literal": "0"
                                             }
                                         }
@@ -146,38 +172,38 @@
                     },
                     "if_statement": [
                         {
-                            "lineno": 12,
+                            "lineno": 13,
                             "location": {
-                                "lineno": 11,
+                                "lineno": 12,
                                 "id": "result"
                             },
                             "symbol": "=",
                             "expression": {
-                                "lineno": 11,
+                                "lineno": 12,
                                 "orterm": {
-                                    "lineno": 11,
+                                    "lineno": 12,
                                     "andterm": {
-                                        "lineno": 11,
+                                        "lineno": 12,
                                         "relTerm": {
-                                            "lineno": 11,
+                                            "lineno": 12,
                                             "addTerm": {
-                                                "lineno": 11,
+                                                "lineno": 12,
                                                 "factor": {
-                                                    "lineno": 11,
+                                                    "lineno": 12,
                                                     "id": "area",
                                                     "arguments": [
                                                         {
-                                                            "lineno": 11,
+                                                            "lineno": 12,
                                                             "orterm": {
-                                                                "lineno": 11,
+                                                                "lineno": 12,
                                                                 "andterm": {
-                                                                    "lineno": 11,
+                                                                    "lineno": 12,
                                                                     "relTerm": {
-                                                                        "lineno": 11,
+                                                                        "lineno": 12,
                                                                         "addTerm": {
-                                                                            "lineno": 11,
+                                                                            "lineno": 12,
                                                                             "factor": {
-                                                                                "lineno": 11,
+                                                                                "lineno": 12,
                                                                                 "id": "radius"
                                                                             }
                                                                         }
@@ -194,19 +220,19 @@
                             }
                         },
                         {
-                            "lineno": 13,
+                            "lineno": 14,
                             "expression": {
-                                "lineno": 12,
+                                "lineno": 13,
                                 "orterm": {
-                                    "lineno": 12,
+                                    "lineno": 13,
                                     "andterm": {
-                                        "lineno": 12,
+                                        "lineno": 13,
                                         "relTerm": {
-                                            "lineno": 12,
+                                            "lineno": 13,
                                             "addTerm": {
-                                                "lineno": 12,
+                                                "lineno": 13,
                                                 "factor": {
-                                                    "lineno": 12,
+                                                    "lineno": 13,
                                                     "id": "result"
                                                 }
                                             }
@@ -218,21 +244,21 @@
                     ],
                     "else_statement": [
                         {
-                            "lineno": 15,
+                            "lineno": 16,
                             "expression": {
-                                "lineno": 14,
+                                "lineno": 15,
                                 "orterm": {
-                                    "lineno": 14,
+                                    "lineno": 15,
                                     "andterm": {
-                                        "lineno": 14,
+                                        "lineno": 15,
                                         "relTerm": {
-                                            "lineno": 14,
+                                            "lineno": 15,
                                             "addTerm": {
-                                                "lineno": 14,
+                                                "lineno": 15,
                                                 "factor": {
-                                                    "lineno": 14,
+                                                    "lineno": 15,
                                                     "unary_expression": {
-                                                        "lineno": 14,
+                                                        "lineno": 15,
                                                         "literal": "1"
                                                     },
                                                     "unary_op": "-"
@@ -246,32 +272,32 @@
                     ]
                 },
                 {
-                    "lineno": 24,
+                    "lineno": 25,
                     "expression": {
-                        "lineno": 17,
+                        "lineno": 18,
                         "orterm": {
-                            "lineno": 17,
+                            "lineno": 18,
                             "andterm": {
-                                "lineno": 17,
+                                "lineno": 18,
                                 "relTerm": {
-                                    "lineno": 17,
+                                    "lineno": 18,
                                     "addTerm": {
-                                        "lineno": 17,
+                                        "lineno": 18,
                                         "factor": {
-                                            "lineno": 17,
+                                            "lineno": 18,
                                             "id": "result"
                                         }
                                     }
                                 },
                                 "symbol": ">",
                                 "next": {
-                                    "lineno": 17,
+                                    "lineno": 18,
                                     "relTerm": {
-                                        "lineno": 17,
+                                        "lineno": 18,
                                         "addTerm": {
-                                            "lineno": 17,
+                                            "lineno": 18,
                                             "factor": {
-                                                "lineno": 17,
+                                                "lineno": 18,
                                                 "literal": "50.1"
                                             }
                                         }
@@ -282,45 +308,12 @@
                     },
                     "statement": [
                         {
-                            "lineno": 19,
+                            "lineno": 20,
                             "location": {
-                                "lineno": 18,
+                                "lineno": 19,
                                 "id": "result"
                             },
                             "symbol": "=",
-                            "expression": {
-                                "lineno": 18,
-                                "orterm": {
-                                    "lineno": 18,
-                                    "andterm": {
-                                        "lineno": 18,
-                                        "relTerm": {
-                                            "lineno": 18,
-                                            "addTerm": {
-                                                "lineno": 18,
-                                                "factor": {
-                                                    "lineno": 18,
-                                                    "id": "result"
-                                                }
-                                            },
-                                            "symbol": "-",
-                                            "next": {
-                                                "lineno": 18,
-                                                "addTerm": {
-                                                    "lineno": 18,
-                                                    "factor": {
-                                                        "lineno": 18,
-                                                        "literal": "1.0"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "lineno": 22,
                             "expression": {
                                 "lineno": 19,
                                 "orterm": {
@@ -335,17 +328,50 @@
                                                     "lineno": 19,
                                                     "id": "result"
                                                 }
-                                            }
-                                        },
-                                        "symbol": "==",
-                                        "next": {
-                                            "lineno": 19,
-                                            "relTerm": {
+                                            },
+                                            "symbol": "-",
+                                            "next": {
                                                 "lineno": 19,
                                                 "addTerm": {
                                                     "lineno": 19,
                                                     "factor": {
                                                         "lineno": 19,
+                                                        "literal": "1.0"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "lineno": 23,
+                            "expression": {
+                                "lineno": 20,
+                                "orterm": {
+                                    "lineno": 20,
+                                    "andterm": {
+                                        "lineno": 20,
+                                        "relTerm": {
+                                            "lineno": 20,
+                                            "addTerm": {
+                                                "lineno": 20,
+                                                "factor": {
+                                                    "lineno": 20,
+                                                    "id": "result"
+                                                }
+                                            }
+                                        },
+                                        "symbol": "==",
+                                        "next": {
+                                            "lineno": 20,
+                                            "relTerm": {
+                                                "lineno": 20,
+                                                "addTerm": {
+                                                    "lineno": 20,
+                                                    "factor": {
+                                                        "lineno": 20,
                                                         "literal": "55.3"
                                                     }
                                                 }
@@ -356,7 +382,7 @@
                             },
                             "if_statement": [
                                 {
-                                    "lineno": 21
+                                    "lineno": 22
                                 }
                             ],
                             "else_statement": []
@@ -364,22 +390,22 @@
                     ]
                 },
                 {
-                    "lineno": 25
+                    "lineno": 26
                 },
                 {
-                    "lineno": 27,
+                    "lineno": 28,
                     "expression": {
-                        "lineno": 25,
+                        "lineno": 26,
                         "orterm": {
-                            "lineno": 25,
+                            "lineno": 26,
                             "andterm": {
-                                "lineno": 25,
+                                "lineno": 26,
                                 "relTerm": {
-                                    "lineno": 25,
+                                    "lineno": 26,
                                     "addTerm": {
-                                        "lineno": 25,
+                                        "lineno": 26,
                                         "factor": {
-                                            "lineno": 25,
+                                            "lineno": 26,
                                             "literal": "1"
                                         }
                                     }
@@ -389,19 +415,19 @@
                     }
                 },
                 {
-                    "lineno": 28,
+                    "lineno": 29,
                     "expression": {
-                        "lineno": 27,
+                        "lineno": 28,
                         "orterm": {
-                            "lineno": 27,
+                            "lineno": 28,
                             "andterm": {
-                                "lineno": 27,
+                                "lineno": 28,
                                 "relTerm": {
-                                    "lineno": 27,
+                                    "lineno": 28,
                                     "addTerm": {
-                                        "lineno": 27,
+                                        "lineno": 28,
                                         "factor": {
-                                            "lineno": 27,
+                                            "lineno": 28,
                                             "literal": "0"
                                         }
                                     }

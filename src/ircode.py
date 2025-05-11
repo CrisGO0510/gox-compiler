@@ -1,9 +1,7 @@
 from rich import print
-from typing import List, Union
+from typing import List
 from functools import singledispatchmethod
-
 from parser import *
-from symtab import Symtab
 
 
 class IRModule:
@@ -20,12 +18,17 @@ class IRModule:
 
 
 class IRGlobal:
-    def __init__(self, name, type):
+    def __init__(self, name, type, value=None):
         self.name = name
         self.type = type
+        self.value = value
 
     def dump(self):
-        print(f"GLOBAL::: {self.name}: {self.type}")
+        mapped_type = IRType.getTypeMap(self.type)
+        if self.value is not None:
+            print(f"GLOBAL::: {self.name} {mapped_type} {self.value}")
+        else:
+            print(f"GLOBAL::: {self.name} {mapped_type}")
 
 
 class IRInstruction:
@@ -51,41 +54,86 @@ class IRFunction:
         self.locals = {}
         self.code: List[IRInstruction] = []
 
-    def new_local(self, name: str, type: str):
-        self.locals[name] = type
-
-    def append(self, opcode: str, *args):
-        self.code.append(IRInstruction(opcode, *args))
-
-    def extend(self, instructions: List[IRInstruction]):
-        self.code.extend(instructions)
-
     def dump(self):
-        mapped_parmtypes = [_typemap.get(t, t) for t in self.parmtypes]
-        mapped_return_type = _typemap.get(self.return_type, self.return_type)
+        mapped_parmtypes = [IRType.getTypeMap(t) for t in self.parmtypes]
+        mapped_return_type = IRType.getTypeMap(self.return_type)
 
         print(
             f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} {mapped_return_type}"
         )
         mapped_locals = {
-            name: _typemap.get(type, type) for name, type in self.locals.items()
+            name: IRType.getTypeMap(type) for name, type in self.locals.items()
         }
+
         print(f"locals: {mapped_locals}")
         for instr in self.code:
             print(instr)
 
 
-_typemap = {
-    "int": "I",
-    "float": "F",
-    "bool": "I",
-    "char": "I",
-}
+class IRType:
+    _typemap = {
+        "int": "I",
+        "float": "F",
+        "bool": "I",
+        "char": "I",
+    }
 
+    _binop_code = {
+        ("int", "+", "int"): "ADDI",
+        ("int", "-", "int"): "SUBI",
+        ("int", "*", "int"): "MULI",
+        ("int", "/", "int"): "DIVI",
+        ("int", "<", "int"): "LTI",
+        ("int", "<=", "int"): "LEI",
+        ("int", ">", "int"): "GTI",
+        ("int", ">=", "int"): "GEI",
+        ("int", "==", "int"): "EQI",
+        ("int", "!=", "int"): "NEI",
+        ("float", "+", "float"): "ADDF",
+        ("float", "-", "float"): "SUBF",
+        ("float", "*", "float"): "MULF",
+        ("float", "/", "float"): "DIVF",
+        ("float", "<", "float"): "LTF",
+        ("float", "<=", "float"): "LEF",
+        ("float", ">", "float"): "GTF",
+        ("float", ">=", "float"): "GEF",
+        ("float", "==", "float"): "EQF",
+        ("float", "!=", "float"): "NEF",
+        ("char", "<", "char"): "LTI",
+        ("char", "<=", "char"): "LEI",
+        ("char", ">", "char"): "GTI",
+        ("char", ">=", "char"): "GEI",
+        ("char", "==", "char"): "EQI",
+        ("char", "!=", "char"): "NEI",
+    }
 
-def new_temp(n=[0]):
-    n[0] += 1
-    return f"$temp{n[0]}"
+    @classmethod
+    def getTypeMap(cls, type: str) -> str:
+        if type in cls._typemap:
+            return cls._typemap[type]
+        else:
+            raise Exception(f"Tipo {type} no soportado")
+
+    @classmethod
+    def getConst(cls, type: str) -> str:
+        if type in cls._typemap:
+            return "CONST" + cls._typemap[type]
+        else:
+            raise Exception(f"Tipo {type} no soportado")
+
+    @classmethod
+    def getPrint(cls, type: str) -> str:
+        if type in cls._typemap:
+            return "PRINT" + cls._typemap[type]
+        else:
+            raise Exception(f"Tipo {type} no soportado")
+
+    @classmethod
+    def getBinOpCode(cls, type: str, op: str) -> str:
+        if (type, op, type) in cls._binop_code:
+            return cls._binop_code[(type, op, type)]
+        else:
+            raise Exception(f"Operador {op} no soportado para el tipo {type}")
 
 
 class IRCode:
@@ -94,7 +142,7 @@ class IRCode:
 
     def gencode(self, program: Program) -> IRModule:
         module = IRModule()
-        main_func = IRFunction(module, "main", [], [], "I")
+        IRFunction(module, "main", [], [], "int")
 
         for stmt in program.statements:
             print(f"Processing {stmt}")
@@ -137,19 +185,30 @@ class IRCode:
             self.statement(instruction, func)
 
     @statement.register
-    def _(self, stmt: Vardecl, func: IRFunction):
-        func.locals[stmt.id] = stmt.type
+    def _(self, stmt: Vardecl, ctx):
+        if isinstance(ctx, IRFunction):
+            ctx.locals[stmt.id] = stmt.type
 
-        if stmt.expression is not None:
-            # Creamos la asignación completa con todos sus campos
-            assignment = Assignment(
-                lineno=stmt.lineno,
-                location=Location(lineno=stmt.lineno, id=stmt.id),
-                symbol="=",
-                expression=stmt.expression,
+            if stmt.expression is not None:
+                assignment = Assignment(
+                    lineno=stmt.lineno,
+                    location=Location(lineno=stmt.lineno, id=stmt.id),
+                    symbol="=",
+                    expression=stmt.expression,
+                )
+                self.statement(assignment, ctx)
+
+        elif isinstance(ctx, IRModule):
+            func: IRFunction = IRFunction(
+                IRModule(),
+                stmt.id,
+                [],
+                [],
+                stmt.type,
             )
 
-            self.statement(assignment, func)
+            self.statement(stmt.expression, func)
+            ctx.globals[stmt.id] = IRGlobal(stmt.id, stmt.type, func.code[0].args[0])
 
     @statement.register
     def _(self, stmt: Assignment, func: IRFunction):
@@ -160,7 +219,6 @@ class IRCode:
     @statement.register
     def _(self, stmt: Expression, func: IRFunction):
         self.statement(stmt.orterm, func)
-        # TODO: Agregar el resto de la expresión
 
     @statement.register
     def _(self, stmt: OrTerm, func: IRFunction):
@@ -169,23 +227,31 @@ class IRCode:
     @statement.register
     def _(self, stmt: AndTerm, func: IRFunction):
         self.statement(stmt.relTerm, func)
+        if stmt.symbol:
+            self.statement(stmt.next, func)
+            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            func.code.append(instr)
 
     @statement.register
     def _(self, stmt: RelTerm, func: IRFunction):
         self.statement(stmt.addTerm, func)
-        if stmt.next:
+        if stmt.symbol:
             self.statement(stmt.next, func)
-            instr = IRInstruction("ADD")
+            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
             func.code.append(instr)
 
     @statement.register
     def _(self, stmt: AddTerm, func: IRFunction):
         self.statement(stmt.factor, func)
+        if stmt.symbol:
+            self.statement(stmt.next, func)
+            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            func.code.append(instr)
 
     @statement.register
     def _(self, stmt: Factor, func: IRFunction):
         if stmt.literal:
-            instr = IRInstruction("CONST", stmt.literal)
+            instr = IRInstruction(IRType.getConst("int"), stmt.literal)
             func.code.append(instr)
             return
 
@@ -199,12 +265,27 @@ class IRCode:
             return
 
         if stmt.id:
-            instr = IRInstruction("LOCAL_GET", stmt.id)
+            if stmt.id in func.locals:
+                instr = IRInstruction("LOCAL_GET", stmt.id)
+                func.code.append(instr)
+                return
+            if stmt.id in func.module.globals:
+                instr = IRInstruction("GLOBAL_GET", stmt.id)
+                func.code.append(instr)
+                return
+
+            raise Exception(f"Variable {stmt.id} no encontrada en el contexto actual")
+
+        if stmt.unary_expression:
+            instr = IRInstruction(
+                IRType.getConst("int"),
+                f"{stmt.unary_op}{stmt.unary_expression.literal}",
+            )
             func.code.append(instr)
             return
 
         raise NotImplementedError(
-            f"No hay un handler implementado para el tipo {type(stmt).__name__}\n"
+            f"No hay un handler implementado para el tipo {stmt}\n"
         )
 
     @statement.register
@@ -216,13 +297,47 @@ class IRCode:
     @statement.register
     def _(self, stmt: PrintStmt, func: IRFunction):
         self.statement(stmt.expression, func)
-        instr = IRInstruction("PRINT")
+        instr = IRInstruction(IRType.getPrint("int"))
         func.code.append(instr)
 
     @statement.register
     def _(self, stmt: IfStmt, func: IRFunction):
-        pass
+        self.statement(stmt.expression, func)
+        instr = IRInstruction("IF")
+        func.code.append(instr)
+
+        for statement in stmt.if_statement:
+            self.statement(statement, func)
+
+        if stmt.else_statement:
+            instr = IRInstruction("ELSE")
+            func.code.append(instr)
+            for statement in stmt.else_statement:
+                self.statement(statement, func)
+
+        instr = IRInstruction("ENDIF")
+        func.code.append(instr)
 
     @statement.register
     def _(self, stmt: WhileStmt, func: IRFunction):
-        pass
+        instr = IRInstruction("LOOP")
+        func.code.append(instr)
+        self.statement(stmt.expression, func)
+        instr = IRInstruction("CBREAK_IF_FALSE")
+        func.code.append(instr)
+
+        for statement in stmt.statement:
+            self.statement(statement, func)
+
+        instr = IRInstruction("ENDLOOP")
+        func.code.append(instr)
+
+    @statement.register
+    def _(self, stmt: ContinueStmt, func: IRFunction):
+        instr = IRInstruction("CONTINUE")
+        func.code.append(instr)
+
+    @statement.register
+    def _(self, stmt: BreakStmt, func: IRFunction):
+        instr = IRInstruction("CBREAK")
+        func.code.append(instr)
