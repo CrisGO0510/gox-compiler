@@ -5,16 +5,25 @@ from lexer import Token
 from rich import print
 
 
-@dataclass
-class Assignment:
+class ReprMixin:
+    def __repr__(self):
+        attrs = []
+        for field_name, value in self.__dict__.items():
+            if value is not None:
+                attrs.append(f"{field_name}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+@dataclass(repr=False)
+class Assignment(ReprMixin):
     lineno: int
     location: Location
     symbol: Literal["="]
     expression: Expression
 
 
-@dataclass
-class Vardecl:
+@dataclass(repr=False)
+class Vardecl(ReprMixin):
     lineno: int
     mut: Literal["var", "const"]
     id: str
@@ -24,8 +33,8 @@ class Vardecl:
     initialized: bool = False  # Indica si la variable ha sido inicializada
 
 
-@dataclass
-class FuncDecl:
+@dataclass(repr=False)
+class FuncDecl(ReprMixin):
     lineno: int
     id: str
     parameters: Parameters
@@ -33,45 +42,45 @@ class FuncDecl:
     statements: List[Statement]
 
 
-@dataclass
-class IfStmt:
+@dataclass(repr=False)
+class IfStmt(ReprMixin):
     lineno: int
     expression: Expression
     if_statement: List[Statement] = field(default_factory=list)
     else_statement: List[Statement] = field(default_factory=list)
 
 
-@dataclass
-class WhileStmt:
+@dataclass(repr=False)
+class WhileStmt(ReprMixin):
     lineno: int
     expression: Expression
     statement: List[Statement] = field(default_factory=list)
 
 
-@dataclass
-class BreakStmt:
+@dataclass(repr=False)
+class BreakStmt(ReprMixin):
     lineno: int
 
 
-@dataclass
-class ContinueStmt:
+@dataclass(repr=False)
+class ContinueStmt(ReprMixin):
     lineno: int
 
 
-@dataclass
-class ReturnStmt:
-    lineno: int
-    expression: Expression
-
-
-@dataclass
-class PrintStmt:
+@dataclass(repr=False)
+class ReturnStmt(ReprMixin):
     lineno: int
     expression: Expression
 
 
-@dataclass
-class Parameters:
+@dataclass(repr=False)
+class PrintStmt(ReprMixin):
+    lineno: int
+    expression: Expression
+
+
+@dataclass(repr=False)
+class Parameters(ReprMixin):
     lineno: int
     id: str
     type: str
@@ -79,8 +88,8 @@ class Parameters:
     mut = "var"
 
 
-@dataclass
-class Location:
+@dataclass(repr=False)
+class Location(ReprMixin):
     lineno: int
     id: Optional[str] = None
     expression: Optional[Expression] = None
@@ -94,48 +103,48 @@ class Location:
             raise ValueError("Location debe tener 'id' o 'expression' establecidos.")
 
 
-@dataclass
-class Expression:
+@dataclass(repr=False)
+class Expression(ReprMixin):
     lineno: int
     orterm: OrTerm
     symbol: Optional[str] = None
     next: Optional[OrTerm] = None
 
 
-@dataclass
-class OrTerm:
+@dataclass(repr=False)
+class OrTerm(ReprMixin):
     lineno: int
     andterm: AndTerm
     symbol: Optional[str] = None
     next: Optional[AndTerm] = None
 
 
-@dataclass
-class AndTerm:
+@dataclass(repr=False)
+class AndTerm(ReprMixin):
     lineno: int
     relTerm: RelTerm
     symbol: Optional[str] = None
     next: Optional[RelTerm] = None
 
 
-@dataclass
-class RelTerm:
+@dataclass(repr=False)
+class RelTerm(ReprMixin):
     lineno: int
     addTerm: AddTerm
     symbol: Optional[str] = None
     next: Optional[AddTerm] = None
 
 
-@dataclass
-class AddTerm:
+@dataclass(repr=False)
+class AddTerm(ReprMixin):
     lineno: int
     factor: Factor
     symbol: Optional[str] = None
     next: Optional[Factor] = None
 
 
-@dataclass
-class Factor:
+@dataclass(repr=False)
+class Factor(ReprMixin):
     lineno: int
     literal: Optional[str] = None
     type: Optional[str] = None
@@ -147,8 +156,8 @@ class Factor:
     expression: Optional[Expression] = None
 
 
-@dataclass
-class Arguments:
+@dataclass(repr=False)
+class Arguments(ReprMixin):
     lineno: int
     expression: Expression
     next: Optional[Arguments] = None
@@ -167,14 +176,14 @@ Statement = Union[
 ]
 
 
-@dataclass
-class Program:
+@dataclass(repr=False)
+class Program(ReprMixin):
     lineno: int
     statements: List[Statement]
 
 
-@dataclass
-class RecursiveDescentParser:
+@dataclass(repr=False)
+class RecursiveDescentParser(ReprMixin):
     tokens: List[Token]
     indexToken: int
 
