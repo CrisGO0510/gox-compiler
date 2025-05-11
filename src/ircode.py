@@ -8,7 +8,7 @@ from symtab import Symtab
 
 class IRModule:
     def __init__(self):
-        self.functions = {}
+        self.functions: dict[str, IRFunction] = {}
         self.globals = {}
 
     def dump(self):
@@ -63,7 +63,7 @@ class IRFunction:
     def dump(self):
         mapped_parmtypes = [_typemap.get(t, t) for t in self.parmtypes]
 
-        print(f"FUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} ")
+        print(f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} ")
         mapped_locals = {
             name: _typemap.get(type, type) for name, type in self.locals.items()
         }
@@ -94,7 +94,7 @@ class IRCode:
         main_func = IRFunction(module, "main", [], [], "I")
 
         for stmt in program.statements:
-            print(f"Processing {stmt}")
+            # print(f"Processing {stmt}")
             self.statement(stmt, module)
 
         return module
@@ -110,7 +110,8 @@ class IRCode:
         print("Handling function declaration")
         if stmt.id == "main":
             stmt.id = "_actual_main"
-            # TODO: Agregar call a main
+            instr = [IRInstruction("CALL", "_actual_main"), IRInstruction("RET")]
+            module.functions["main"].code = instr
 
         param_names = []
         param_types = []
@@ -136,10 +137,73 @@ class IRCode:
     def _(self, stmt: Vardecl, func: IRFunction):
         func.locals[stmt.id] = stmt.type
 
+        if stmt.expression is not None:
+            # Creamos la asignación completa con todos sus campos
+            assignment = Assignment(
+                lineno=stmt.lineno,
+                location=Location(lineno=stmt.lineno, id=stmt.id),
+                symbol="=",
+                expression=stmt.expression,
+            )
+
+            self.statement(assignment, func)
+
+    @statement.register
+    def _(self, stmt: Assignment, func: IRFunction):
+        self.statement(stmt.expression, func)
+        instr = IRInstruction("LOCAL_SET", stmt.location.id)
+        func.code.append(instr)
+
+    @statement.register
+    def _(self, stmt: Expression, func: IRFunction):
+        self.statement(stmt.orterm, func)
+        # TODO: Agregar el resto de la expresión
+
+    @statement.register
+    def _(self, stmt: OrTerm, func: IRFunction):
+        self.statement(stmt.andterm, func)
+
+    @statement.register
+    def _(self, stmt: AndTerm, func: IRFunction):
+        self.statement(stmt.relTerm, func)
+
+    @statement.register
+    def _(self, stmt: RelTerm, func: IRFunction):
+        self.statement(stmt.addTerm, func)
+        if stmt.next:
+            self.statement(stmt.next, func)
+            instr = IRInstruction("ADD")
+            func.code.append(instr)
+
+    @statement.register
+    def _(self, stmt: AddTerm, func: IRFunction):
+        self.statement(stmt.factor, func)
+
+    @statement.register
+    def _(self, stmt: Factor, func: IRFunction):
+        if stmt.literal:
+            instr = IRInstruction("CONSTI", stmt.literal)
+            func.code.append(instr)
+            return
+        # TODO: Agregar el resto de los casos
+
+        if stmt.id:
+            instr = IRInstruction("LOCAL_GET", stmt.id)
+            func.code.append(instr)
+            return
+
+        raise NotImplementedError(
+            f"No hay un handler implementado para el tipo {type(stmt).__name__}\n"
+        )
+
     @statement.register
     def _(self, stmt: ReturnStmt, func: IRFunction):
-        print("Handling return statement")
+        self.statement(stmt.expression, func)
+        instr = IRInstruction("RET")
+        func.code.append(instr)
 
     @statement.register
     def _(self, stmt: PrintStmt, func: IRFunction):
-        print("Handling print statement")
+        self.statement(stmt.expression, func)
+        instr = IRInstruction("PRINT")
+        func.code.append(instr)

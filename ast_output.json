@@ -1,5 +1,5 @@
 {
-    "lineno": 11,
+    "lineno": 12,
     "statements": [
         {
             "lineno": 6,
@@ -79,7 +79,7 @@
             ]
         },
         {
-            "lineno": 11,
+            "lineno": 12,
             "id": "main",
             "return_type": "int",
             "statements": [
@@ -88,30 +88,15 @@
                     "mut": "var",
                     "id": "y",
                     "type": "int",
-                    "assignment": "=",
-                    "expression": {
-                        "lineno": 7,
-                        "orterm": {
-                            "lineno": 7,
-                            "andterm": {
-                                "lineno": 7,
-                                "relTerm": {
-                                    "lineno": 7,
-                                    "addTerm": {
-                                        "lineno": 7,
-                                        "factor": {
-                                            "lineno": 7,
-                                            "literal": "5"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
                     "initialized": false
                 },
                 {
                     "lineno": 9,
+                    "location": {
+                        "lineno": 8,
+                        "id": "y"
+                    },
+                    "symbol": "=",
                     "expression": {
                         "lineno": 8,
                         "orterm": {
@@ -124,47 +109,7 @@
                                         "lineno": 8,
                                         "factor": {
                                             "lineno": 8,
-                                            "id": "prueba",
-                                            "arguments": [
-                                                {
-                                                    "lineno": 8,
-                                                    "orterm": {
-                                                        "lineno": 8,
-                                                        "andterm": {
-                                                            "lineno": 8,
-                                                            "relTerm": {
-                                                                "lineno": 8,
-                                                                "addTerm": {
-                                                                    "lineno": 8,
-                                                                    "factor": {
-                                                                        "lineno": 8,
-                                                                        "id": "y"
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "lineno": 8,
-                                                    "orterm": {
-                                                        "lineno": 8,
-                                                        "andterm": {
-                                                            "lineno": 8,
-                                                            "relTerm": {
-                                                                "lineno": 8,
-                                                                "addTerm": {
-                                                                    "lineno": 8,
-                                                                    "factor": {
-                                                                        "lineno": 8,
-                                                                        "literal": "10"
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
+                                            "literal": "5"
                                         }
                                     }
                                 }
@@ -186,6 +131,68 @@
                                         "lineno": 9,
                                         "factor": {
                                             "lineno": 9,
+                                            "id": "prueba",
+                                            "arguments": [
+                                                {
+                                                    "lineno": 9,
+                                                    "orterm": {
+                                                        "lineno": 9,
+                                                        "andterm": {
+                                                            "lineno": 9,
+                                                            "relTerm": {
+                                                                "lineno": 9,
+                                                                "addTerm": {
+                                                                    "lineno": 9,
+                                                                    "factor": {
+                                                                        "lineno": 9,
+                                                                        "id": "y"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "lineno": 9,
+                                                    "orterm": {
+                                                        "lineno": 9,
+                                                        "andterm": {
+                                                            "lineno": 9,
+                                                            "relTerm": {
+                                                                "lineno": 9,
+                                                                "addTerm": {
+                                                                    "lineno": 9,
+                                                                    "factor": {
+                                                                        "lineno": 9,
+                                                                        "literal": "10"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "lineno": 11,
+                    "expression": {
+                        "lineno": 10,
+                        "orterm": {
+                            "lineno": 10,
+                            "andterm": {
+                                "lineno": 10,
+                                "relTerm": {
+                                    "lineno": 10,
+                                    "addTerm": {
+                                        "lineno": 10,
+                                        "factor": {
+                                            "lineno": 10,
                                             "literal": "0"
                                         }
                                     }
