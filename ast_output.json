@@ -4,16 +4,6 @@
         {
             "lineno": 6,
             "id": "prueba",
-            "parameters": {
-                "lineno": 1,
-                "id": "hola",
-                "type": "int",
-                "next": {
-                    "lineno": 1,
-                    "id": "adios",
-                    "type": "int"
-                }
-            },
             "return_type": "int",
             "statements": [
                 {
@@ -63,12 +53,9 @@
                                     "symbol": "+",
                                     "next": {
                                         "lineno": 3,
-                                        "addTerm": {
+                                        "factor": {
                                             "lineno": 3,
-                                            "factor": {
-                                                "lineno": 3,
-                                                "id": "x"
-                                            }
+                                            "id": "x"
                                         }
                                     }
                                 }
@@ -76,7 +63,17 @@
                         }
                     }
                 }
-            ]
+            ],
+            "parameters": {
+                "lineno": 1,
+                "id": "hola",
+                "type": "int",
+                "next": {
+                    "lineno": 1,
+                    "id": "adios",
+                    "type": "int"
+                }
+            }
         },
         {
             "lineno": 12,

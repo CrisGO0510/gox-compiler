@@ -62,8 +62,11 @@ class IRFunction:
 
     def dump(self):
         mapped_parmtypes = [_typemap.get(t, t) for t in self.parmtypes]
+        mapped_return_type = _typemap.get(self.return_type, self.return_type)
 
-        print(f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} ")
+        print(
+            f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} {mapped_return_type}"
+        )
         mapped_locals = {
             name: _typemap.get(type, type) for name, type in self.locals.items()
         }
@@ -94,7 +97,7 @@ class IRCode:
         main_func = IRFunction(module, "main", [], [], "I")
 
         for stmt in program.statements:
-            # print(f"Processing {stmt}")
+            print(f"Processing {stmt}")
             self.statement(stmt, module)
 
         return module
@@ -182,10 +185,18 @@ class IRCode:
     @statement.register
     def _(self, stmt: Factor, func: IRFunction):
         if stmt.literal:
-            instr = IRInstruction("CONSTI", stmt.literal)
+            instr = IRInstruction("CONST", stmt.literal)
             func.code.append(instr)
             return
-        # TODO: Agregar el resto de los casos
+
+        if stmt.arguments:
+            print(f"Arguments: {stmt.arguments}")
+            for arg in stmt.arguments:
+                self.statement(arg, func)
+
+            instr = IRInstruction("CALL", stmt.id)
+            func.code.append(instr)
+            return
 
         if stmt.id:
             instr = IRInstruction("LOCAL_GET", stmt.id)
