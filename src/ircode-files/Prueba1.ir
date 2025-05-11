@@ -3,6 +3,11 @@ MODULE:::
 GLOBAL::: PI F 3.1415
 GLOBAL::: radius I 10
 
+FUNCTION::: main, [], [] I
+locals: {}
+('CALL', '_actual_main')
+('RET',)
+
 FUNCTION::: area, ['a'], ['I'] F
 locals: {}
 ('GLOBAL_GET', 'PI')
@@ -51,9 +56,4 @@ locals: {'result': 'F'}
 ('PRINTI',)
 
 ('CONSTI', 0)
-('RET',)
-
-FUNCTION::: main, [], [] I
-locals: {}
-('CALL', '_actual_main')
 ('RET',)
