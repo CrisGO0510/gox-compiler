@@ -218,3 +218,11 @@ class IRCode:
         self.statement(stmt.expression, func)
         instr = IRInstruction("PRINT")
         func.code.append(instr)
+
+    @statement.register
+    def _(self, stmt: IfStmt, func: IRFunction):
+        pass
+
+    @statement.register
+    def _(self, stmt: WhileStmt, func: IRFunction):
+        pass

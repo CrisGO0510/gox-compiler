@@ -1,26 +1,59 @@
 MODULE:::
 
-FUNCTION::: main, [], [] I
-locals: {}
-('CALL', '_actual_main')
-('RET',)
+GLOBAL::: PI F 3.1415
+GLOBAL::: radius I 10
 
-FUNCTION::: prueba, ['hola', 'adios'], ['I', 'I'] I
-locals: {'x': 'I'}
-('CONSTI', 3)
-('LOCAL_SET', 'x')
-('LOCAL_GET', 'hola')
-('LOCAL_GET', 'x')
-('ADDI',)
+FUNCTION::: area, ['a'], ['I'] F
+locals: {}
+('GLOBAL_GET', 'PI')
+('CONSTF', 3.3)
+('DIVF',)
 ('RET',)
 
 FUNCTION::: _actual_main, [], [] I
-locals: {'y': 'I'}
-('CONSTI', 5)
-('LOCAL_SET', 'y')
-('LOCAL_GET', 'y')
-('CONSTI', 10)
-('CALL', 'prueba')
-('PRINTI',)
+locals: {'result': 'F'}
+
+('GLOBAL_GET', 'radius')
 ('CONSTI', 0)
+('GTI',)
+('IF',)
+    ('GLOBAL_GET', 'radius')
+    ('CALL', 'area')
+    ('LOCAL_SET', 'result')
+    ('LOCAL_GET', 'result')
+    ('PRINTF',)
+('ELSE',)
+    ('CONSTI', -1)
+    ('PRINTI',)
+('ENDIF',)
+
+('LOOP',)
+    ('LOCAL_GET', 'result')
+    ('CONSTF', 50.1)
+    ('GTF',)
+    ('CBREAK_IF_FALSE',)
+
+    ('LOCAL_GET', 'result')
+    ('CONSTF', 1.0)
+    ('SUBF',)
+    ('LOCAL_SET', 'result')
+
+    ('LOCAL_GET', 'result')
+    ('CONSTF', 55.3)
+    ('EQF',)
+    ('IF',)
+        ('CBREAK',)
+    ('ENDIF',)
+('ENDLOOP',)
+
+('CONTINUE',)  ; fuera de loop, sin efecto real
+('CONSTI', 1)
+('PRINTI',)
+
+('CONSTI', 0)
+('RET',)
+
+FUNCTION::: main, [], [] I
+locals: {}
+('CALL', '_actual_main')
 ('RET',)

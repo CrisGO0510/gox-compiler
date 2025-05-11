@@ -1,11 +1,28 @@
-func prueba(hola int, adios int) int {
-    var x int = 3;
-    return hola + x;
+const PI float = 3.1415;
+var radius int = 10;
+
+func area(a int) float {
+    return PI / 3.3;
 }
 
 func main() int {
-    var y int ;
-    y = 5;
-    print prueba(y, 10);
-    return 0;
+  var result float;
+  if radius > 0 {
+      result = area(radius);
+      print result;
+  } else {
+      print -1;
+  }
+
+  while result > 50.1 {
+      result = result - 1.0;
+      if result == 55.3 {
+          break;
+      }
+  }
+
+  continue;
+  print 1;
+
+  return 0;
 }
