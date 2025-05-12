@@ -54,10 +54,7 @@ class Checker:
             node.type = expr_type
 
         if node.mut == "const" and node.expression is None:
-            ErrorManager.print(
-                ErrorType.UNINITIALIZED_CONSTANT, node.lineno, node.id
-            )
-
+            ErrorManager.print(ErrorType.UNINITIALIZED_CONSTANT, node.lineno, node.id)
 
     def visit_Assignment(self, node: Assignment, env: Symtab):
         var = env.get(node.location.id)
