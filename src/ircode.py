@@ -158,7 +158,6 @@ class IRCode:
 
     @statement.register
     def _(self, stmt: FuncDecl, module: IRModule):
-        print("Handling function declaration")
         if stmt.id == "main":
             stmt.id = "_actual_main"
             instr = [IRInstruction("CALL", "_actual_main"), IRInstruction("RET")]
@@ -223,6 +222,10 @@ class IRCode:
     @statement.register
     def _(self, stmt: OrTerm, func: IRFunction):
         self.statement(stmt.andterm, func)
+        if stmt.symbol:
+            self.statement(stmt.next, func)
+            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            func.code.append(instr)
 
     @statement.register
     def _(self, stmt: AndTerm, func: IRFunction):
@@ -274,6 +277,11 @@ class IRCode:
                 func.code.append(instr)
                 return
 
+            if stmt.id in func.parmnames:
+                instr = IRInstruction("LOCAL_GET", stmt.id)
+                func.code.append(instr)
+                return
+
             raise Exception(f"Variable {stmt.id} no encontrada en el contexto actual")
 
         if stmt.unary_expression:
@@ -282,6 +290,10 @@ class IRCode:
                 f"{stmt.unary_op}{stmt.unary_expression.literal}",
             )
             func.code.append(instr)
+            return
+
+        if stmt.expression:
+            self.statement(stmt.expression, func)
             return
 
         raise NotImplementedError(
@@ -323,7 +335,7 @@ class IRCode:
         instr = IRInstruction("LOOP")
         func.code.append(instr)
         self.statement(stmt.expression, func)
-        instr = IRInstruction("CBREAK_IF_FALSE")
+        instr = IRInstruction("CBREAK")
         func.code.append(instr)
 
         for statement in stmt.statement:

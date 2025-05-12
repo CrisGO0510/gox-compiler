@@ -1,54 +1,73 @@
-MODULE:::
-GLOBAL::: PI F 3.1415
-GLOBAL::: radius I 10
-
-FUNCTION::: main, [], [] I
+FUNCTION::: mod, ['a', 'b'], ['I', 'I'] I
 locals: {}
-('CALL', '_actual_main')
+('LOCAL_GET', 'a')
+('LOCAL_GET', 'b')
+('LOCAL_GET', 'a')
+('LOCAL_GET', 'b')
+('DIVI',)
+('MULI',)
+('SUBI',)
 ('RET',)
 
-FUNCTION::: area, ['a'], ['I'] F
-locals: {'result': 'F'}
-('GLOBAL_GET', 'PI')
-('CONSTF', 3.3)
-('DIVF',)
+FUNCTION::: gcd, ['a', 'b'], ['I', 'I'] I
+locals: {'t': 'I'}
+('LOOP',)
+('LOCAL_GET', 'b')
+('CONSTI', 0)
+('NEI',)
+('CBREAK',)
+
+('LOCAL_GET', 'b')
+('LOCAL_SET', 't')
+
+('LOCAL_GET', 'a')
+('LOCAL_GET', 'b')
+('CALL', 'mod')
+('LOCAL_SET', 'b')
+
+('LOCAL_GET', 't')
+('LOCAL_SET', 'a')
+('ENDLOOP',)
+('LOCAL_GET', 'a')
+('RET',)
+
+FUNCTION::: powmod, ['a', 'x', 'n'], ['I', 'I', 'I'] I
+locals: {'result': 'I'}
+('CONSTI', 1)
 ('LOCAL_SET', 'result')
-('LOCAL_GET', 'result')
-('RET',)
 
-FUNCTION::: _actual_main, [], [] I
-locals: {'result': 'F'}
-('GLOBAL_GET', 'radius')
+('LOOP',)
+('LOCAL_GET', 'x')
 ('CONSTI', 0)
 ('GTI',)
-('IF',)
-('GLOBAL_GET', 'radius')
-('CALL', 'area')
-('LOCAL_SET', 'result')
-('LOCAL_GET', 'result')
-('PRINTF',)
-('ELSE',)
-('CONSTI', -1)
-('PRINTI',)
-('ENDIF',)
-('LOOP',)
-('LOCAL_GET', 'result')
-('CONSTF', 50.1)
-('GTF',)
-('CBREAK_IF_FALSE',)
-('LOCAL_GET', 'result')
-('CONSTF', 1.0)
-('SUBF',)
-('LOCAL_SET', 'result')
-('LOCAL_GET', 'result')
-('CONSTF', 55.3)
-('EQF',)
-('IF',)
 ('CBREAK',)
-('ENDIF',)
-('ENDLOOP',)
-('CONTINUE',)
+
+('LOCAL_GET', 'x')
+('CONSTI', 2)
+('CALL', 'mod')
 ('CONSTI', 1)
-('PRINTI',)
-('CONSTI', 0)
+('EQI',)
+('IF',)
+('LOCAL_GET', 'result')
+('LOCAL_GET', 'a')
+('MULI',)
+('LOCAL_GET', 'n')
+('CALL', 'mod')
+('LOCAL_SET', 'result')
+('ENDIF',)
+
+('LOCAL_GET', 'a')
+('LOCAL_GET', 'a')
+('MULI',)
+('LOCAL_GET', 'n')
+('CALL', 'mod')
+('LOCAL_SET', 'a')
+
+('LOCAL_GET', 'x')
+('CONSTI', 2)
+('DIVI',)
+('LOCAL_SET', 'x')
+('ENDLOOP',)
+
+('LOCAL_GET', 'result')
 ('RET',)
