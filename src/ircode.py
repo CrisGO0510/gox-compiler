@@ -60,22 +60,22 @@ class IRFunction:
         mapped_return_type = IRType.getTypeMap(self.return_type)
 
         lines = [
-            f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} {mapped_return_type}",
-            f"locals: {{"
+            f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} {mapped_return_type}"
         ]
 
         mapped_locals = {
             name: IRType.getTypeMap(type) for name, type in self.locals.items()
         }
 
-        for k, v in mapped_locals.items():
-            lines.append(f"  {k}: {v}")
-        lines.append("}")
+        # Construir la línea de locals en una sola línea
+        locals_line = ", ".join(f"{k}: {v}" for k, v in mapped_locals.items())
+        lines.append(f"locals: {{{locals_line}}}")
 
         for instr in self.code:
             lines.append(str(instr))
 
         return "\n".join(lines)
+
 
 
 class IRType:

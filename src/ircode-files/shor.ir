@@ -1,8 +1,11 @@
 MODULE:::
+
 FUNCTION::: main, [], [] I
 locals: {}
-('CALL', '_actual_main')
+('CONSTI', 151821)
+('CALL', 'shor')
 ('RET',)
+
 FUNCTION::: mod, ['a', 'b'], ['I', 'I'] I
 locals: {}
 ('LOCAL_GET', 'a')
@@ -13,37 +16,39 @@ locals: {}
 ('MULI',)
 ('SUBI',)
 ('RET',)
+
 FUNCTION::: gcd, ['a', 'b'], ['I', 'I'] I
 locals: {'t': 'I'}
 ('LOOP',)
-('CONSTI', 1)
 ('LOCAL_GET', 'b')
 ('CONSTI', 0)
 ('NEI',)
-('SUBI',)
 ('CBREAK',)
+
 ('LOCAL_GET', 'b')
 ('LOCAL_SET', 't')
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'b')
 ('CALL', 'mod')
 ('LOCAL_SET', 'b')
+
 ('LOCAL_GET', 't')
 ('LOCAL_SET', 'a')
 ('ENDLOOP',)
 ('LOCAL_GET', 'a')
 ('RET',)
+
 FUNCTION::: powmod, ['a', 'x', 'n'], ['I', 'I', 'I'] I
 locals: {'result': 'I'}
 ('CONSTI', 1)
 ('LOCAL_SET', 'result')
 ('LOOP',)
-('CONSTI', 1)
 ('LOCAL_GET', 'x')
 ('CONSTI', 0)
 ('GTI',)
-('SUBI',)
 ('CBREAK',)
+
 ('LOCAL_GET', 'x')
 ('CONSTI', 2)
 ('CALL', 'mod')
@@ -56,14 +61,15 @@ locals: {'result': 'I'}
 ('LOCAL_GET', 'n')
 ('CALL', 'mod')
 ('LOCAL_SET', 'result')
-('ELSE',)
 ('ENDIF',)
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'a')
 ('MULI',)
 ('LOCAL_GET', 'n')
 ('CALL', 'mod')
 ('LOCAL_SET', 'a')
+
 ('LOCAL_GET', 'x')
 ('CONSTI', 2)
 ('DIVI',)
@@ -71,38 +77,44 @@ locals: {'result': 'I'}
 ('ENDLOOP',)
 ('LOCAL_GET', 'result')
 ('RET',)
+
 FUNCTION::: find_period, ['a', 'N'], ['I', 'I'] I
 locals: {'r': 'I', 'apow': 'I'}
 ('CONSTI', 1)
 ('LOCAL_SET', 'r')
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'r')
 ('LOCAL_GET', 'N')
 ('CALL', 'powmod')
 ('LOCAL_SET', 'apow')
+
 ('LOOP',)
-('CONSTI', 1)
 ('LOCAL_GET', 'apow')
 ('CONSTI', 1)
 ('NEI',)
-('SUBI',)
 ('CBREAK',)
+
 ('LOCAL_GET', 'r')
 ('CONSTI', 1)
 ('ADDI',)
 ('LOCAL_SET', 'r')
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'r')
 ('LOCAL_GET', 'N')
 ('CALL', 'powmod')
 ('LOCAL_SET', 'apow')
 ('ENDLOOP',)
+
 ('LOCAL_GET', 'r')
 ('RET',)
+
 FUNCTION::: shor, ['N'], ['I'] I
 locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('CONSTI', 2)
 ('LOCAL_SET', 'a')
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'N')
 ('CALL', 'gcd')
@@ -111,12 +123,13 @@ locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('IF',)
 ('LOCAL_GET', 'a')
 ('RET',)
-('ELSE',)
 ('ENDIF',)
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'N')
 ('CALL', 'find_period')
 ('LOCAL_SET', 'r')
+
 ('LOCAL_GET', 'r')
 ('CONSTI', 2)
 ('CALL', 'mod')
@@ -125,8 +138,8 @@ locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('IF',)
 ('CONSTI', 0)
 ('RET',)
-('ELSE',)
 ('ENDIF',)
+
 ('LOCAL_GET', 'a')
 ('LOCAL_GET', 'r')
 ('CONSTI', 2)
@@ -134,6 +147,7 @@ locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('LOCAL_GET', 'N')
 ('CALL', 'powmod')
 ('LOCAL_SET', 'x')
+
 ('LOCAL_GET', 'x')
 ('LOCAL_GET', 'N')
 ('CONSTI', 1)
@@ -142,20 +156,22 @@ locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('IF',)
 ('CONSTI', 0)
 ('RET',)
-('ELSE',)
 ('ENDIF',)
+
 ('LOCAL_GET', 'x')
 ('CONSTI', 1)
 ('SUBI',)
 ('LOCAL_GET', 'N')
 ('CALL', 'gcd')
 ('LOCAL_SET', 'f1')
+
 ('LOCAL_GET', 'x')
 ('CONSTI', 1)
 ('ADDI',)
 ('LOCAL_GET', 'N')
 ('CALL', 'gcd')
 ('LOCAL_SET', 'f2')
+
 ('LOCAL_GET', 'f1')
 ('PRINTI',)
 ('CONSTI', 32)
@@ -163,9 +179,4 @@ locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('LOCAL_GET', 'f2')
 ('PRINTI',)
 ('CONSTI', 0)
-('RET',)
-FUNCTION::: _actual_main, [], [] I
-locals: {}
-('CONSTI', 151821)
-('CALL', 'shor')
 ('RET',)
