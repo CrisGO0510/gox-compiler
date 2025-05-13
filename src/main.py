@@ -1,4 +1,5 @@
 import sys
+import os
 from error import ErrorManager
 from lexer import tokenize
 from rich import print
@@ -54,13 +55,16 @@ def main():
         sys.exit(1)
 
     if ErrorManager.get_error_count():
-        ircode_main(AST)
+        ircode_main(AST, filename)
 
 
-def ircode_main(AST: Program):
+def ircode_main(AST: Program, filename: str):
+    base_name = os.path.splitext(os.path.basename(filename))[0]
+    ir_filename = f"./src/ircode-files/{base_name}.ir"
+
     print("[bold yellow]Código intermedio generado:[/bold yellow]")
     ir = IRCode().gencode(AST).dump()
-    with open("ir_output.ir", "w") as f:
+    with open(ir_filename, "w") as f:
         f.write(ir)
 
 if __name__ == "__main__":
