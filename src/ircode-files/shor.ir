@@ -5,12 +5,6 @@ locals: {}
 ('CALL', '_actual_main')
 ('RET',)
 
-FUNCTION::: _actual_main, [], [] I
-locals: {}
-('CONSTI', 151821)
-('CALL', 'shor')
-('RET',)
-
 FUNCTION::: mod, ['a', 'b'], ['I', 'I'] I
 locals: {}
 ('LOCAL_GET', 'a')
@@ -185,4 +179,10 @@ locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('LOCAL_GET', 'f2')
 ('PRINTI',)
 ('CONSTI', 0)
+('RET',)
+
+FUNCTION::: _actual_main, [], [] I
+locals: {}
+('CONSTI', 151821)
+('CALL', 'shor')
 ('RET',)
