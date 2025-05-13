@@ -77,7 +77,6 @@ class IRFunction:
         return "\n".join(lines)
 
 
-
 class IRType:
     _typemap = {
         "int": "I",
@@ -157,7 +156,9 @@ class IRType:
         if (type, op, type) in cls._binop_code:
             return cls._binop_code[(type, op, type)]
         elif (cls.getTypeMapInv(type), op, cls.getTypeMapInv(type)) in cls._binop_code:
-            return cls._binop_code[(cls.getTypeMapInv(type), op, cls.getTypeMapInv(type))]
+            return cls._binop_code[
+                (cls.getTypeMapInv(type), op, cls.getTypeMapInv(type))
+            ]
         else:
             raise Exception(f"Operador {op} no soportado para el tipo {type}")
 
@@ -242,15 +243,16 @@ class IRCode:
     @statement.register
     def _(self, stmt: Expression, func: IRFunction):
         self.statement(stmt.orterm, func)
+        if stmt.symbol:
+            instr = IRInstruction("ORI")
+            func.code.append(instr)
 
     @statement.register
     def _(self, stmt: OrTerm, func: IRFunction):
         self.statement(stmt.andterm, func)
         if stmt.symbol:
             self.statement(stmt.next, func)
-            instr = IRInstruction(
-                IRType.getBinOpCode(self.getTypeLastInstr(func), stmt.symbol)
-            )
+            instr = IRInstruction("ANDI")
             func.code.append(instr)
 
     @statement.register
@@ -286,7 +288,9 @@ class IRCode:
     @statement.register
     def _(self, stmt: Factor, func: IRFunction):
         if stmt.literal is not None:
-            instr = IRInstruction(IRType.getConst(stmt.type), stmt.literal)
+            instr = IRInstruction(
+                IRType.getConst(stmt.type), self.castLiteral(stmt.literal, stmt.type)
+            )
             func.code.append(instr)
             return
 
@@ -318,7 +322,7 @@ class IRCode:
         if stmt.unary_expression:
             instr = IRInstruction(
                 IRType.getConst(stmt.unary_expression.type),
-                f"{stmt.unary_op}{stmt.unary_expression.literal}",
+                f"{stmt.unary_op}{self.castLiteral(stmt.unary_expression.literal, stmt.unary_expression.type)}",
             )
             func.code.append(instr)
             return
@@ -399,3 +403,16 @@ class IRCode:
         if var in func.parmnames:
             return func.parmtypes[func.parmnames.index(var)]
         return func.code[-1].opcode[-1]
+
+    @classmethod
+    def castLiteral(cls, literal: str, type: str):
+        if type == "int":
+            return int(literal)
+        elif type == "float":
+            return float(literal)
+        elif type == "bool":
+            return literal.lower() == "true"
+        elif type == "char":
+            if literal == " ":
+                return ord(" ")
+            return ord(literal[1:-1])
