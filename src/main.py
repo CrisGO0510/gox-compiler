@@ -60,10 +60,8 @@ def main():
 def ircode_main(AST: Program):
     print("[bold yellow]Código intermedio generado:[/bold yellow]")
     ir = IRCode().gencode(AST).dump()
-
-    # with open("ir_output.txt", "w") as f:
-    #     f.write(str(ir))
-
+    with open("ir_output.txt", "w") as f:
+        f.write(ir)
 
 if __name__ == "__main__":
     main()

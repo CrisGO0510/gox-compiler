@@ -163,7 +163,6 @@ class IRCode:
         IRFunction(module, "main", [], [], "int")
 
         for stmt in program.statements:
-            print(f"Processing {stmt}")
             self.statement(stmt, module)
 
         return module
@@ -198,7 +197,6 @@ class IRCode:
         )
 
         for instruction in stmt.statements:
-            print(f"Processing {instruction}")
             self.statement(instruction, func)
 
     @statement.register
