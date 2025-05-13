@@ -2,6 +2,11 @@ MODULE:::
 
 FUNCTION::: main, [], [] I
 locals: {}
+('CALL', '_actual_main')
+('RET',)
+
+FUNCTION::: _actual_main, [], [] I
+locals: {}
 ('CONSTI', 151821)
 ('CALL', 'shor')
 ('RET',)
@@ -43,6 +48,7 @@ FUNCTION::: powmod, ['a', 'x', 'n'], ['I', 'I', 'I'] I
 locals: {'result': 'I'}
 ('CONSTI', 1)
 ('LOCAL_SET', 'result')
+
 ('LOOP',)
 ('LOCAL_GET', 'x')
 ('CONSTI', 0)
