@@ -17,7 +17,7 @@ locals: {}
 ('RET',)
 
 FUNCTION::: gcd, ['a', 'b'], ['I', 'I'] I
-locals: {t: I}
+locals: {'t': 'I'}
 ('LOOP',)
 ('LOCAL_GET', 'b')
 ('CONSTI', '0')
@@ -36,7 +36,7 @@ locals: {t: I}
 ('RET',)
 
 FUNCTION::: powmod, ['a', 'x', 'n'], ['I', 'I', 'I'] I
-locals: {result: I}
+locals: {'result': 'I'}
 ('CONSTI', '1')
 ('LOCAL_SET', 'result')
 ('LOOP',)
@@ -72,7 +72,7 @@ locals: {result: I}
 ('RET',)
 
 FUNCTION::: find_period, ['a', 'N'], ['I', 'I'] I
-locals: {r: I, apow: I}
+locals: {'r': 'I', 'apow': 'I'}
 ('CONSTI', '1')
 ('LOCAL_SET', 'r')
 ('LOCAL_GET', 'a')
@@ -99,7 +99,7 @@ locals: {r: I, apow: I}
 ('RET',)
 
 FUNCTION::: shor, ['N'], ['I'] I
-locals: {a: I, r: I, x: I, f1: I, f2: I}
+locals: {'a': 'I', 'r': 'I', 'x': 'I', 'f1': 'I', 'f2': 'I'}
 ('CONSTI', '2')
 ('LOCAL_SET', 'a')
 ('LOCAL_GET', 'a')

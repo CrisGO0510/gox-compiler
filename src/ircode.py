@@ -68,7 +68,7 @@ class IRFunction:
         }
 
         # Construir la línea de locals en una sola línea
-        locals_line = ", ".join(f"{k}: {v}" for k, v in mapped_locals.items())
+        locals_line = ", ".join(f"'{k}': '{v}'" for k, v in mapped_locals.items())
         lines.append(f"locals: {{{locals_line}}}")
 
         for instr in self.code:
