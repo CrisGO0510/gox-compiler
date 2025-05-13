@@ -1,24 +1,6 @@
 func mod(a int, b int) int {
+    const f = 0.1;
+    print f;
+    print ' ';
     return a - b * (a / b);
-}
-
-func gcd(a int, b int) int {
-    while b != 0 {
-        var t int = b;
-        b = mod(a, b);
-        a = t;
-    }
-    return a;
-}
-
-func powmod(a int, x int, n int) int {
-    var result int = 1;
-    while x > 0 {
-        if mod(x, 2) == 1 {
-            result = mod(result * a, n);
-        }
-        a = mod(a * a, n);
-        x = x / 2;
-    }
-    return result;
 }

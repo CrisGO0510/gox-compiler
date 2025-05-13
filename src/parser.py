@@ -590,9 +590,21 @@ class RecursiveDescentParser(ReprMixin):
             )
 
         if self.token_type() in {"INTEGER", "FLOAT", "CHAR", "BOOL"}:
+            type_mapping = {
+                "INTEGER": "int",
+                "FLOAT": "float",
+                "CHAR": "char",
+                "BOOL": "bool",
+            }
+
+            type = type_mapping[self.token_type()]
+
             literal = self.current_token().value
             self.indexToken += 1
-            return Factor(literal=literal, lineno=self.current_token().lineno)
+
+            return Factor(
+                literal=literal, type=type, lineno=self.current_token().lineno
+            )
 
         if self.token_type() == "LPAREN":
             self.indexToken += 1  # Consumir '('

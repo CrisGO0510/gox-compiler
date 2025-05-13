@@ -74,8 +74,15 @@ class IRType:
     _typemap = {
         "int": "I",
         "float": "F",
-        "bool": "I",
-        "char": "I",
+        "bool": "B",
+        "char": "C",
+    }
+
+    _typemap_inv = {
+        "I": "int",
+        "F": "float",
+        "B": "bool",
+        "C": "char",
     }
 
     _binop_code = {
@@ -115,6 +122,13 @@ class IRType:
             raise Exception(f"Tipo {type} no soportado")
 
     @classmethod
+    def getTypeMapInv(cls, type: str) -> str:
+        if type in cls._typemap_inv:
+            return cls._typemap_inv[type]
+        else:
+            raise Exception(f"Tipo {type} no soportado")
+
+    @classmethod
     def getConst(cls, type: str) -> str:
         if type in cls._typemap:
             return "CONST" + cls._typemap[type]
@@ -125,6 +139,8 @@ class IRType:
     def getPrint(cls, type: str) -> str:
         if type in cls._typemap:
             return "PRINT" + cls._typemap[type]
+        if type in cls._typemap_inv:
+            return "PRINT" + type
         else:
             raise Exception(f"Tipo {type} no soportado")
 
@@ -132,6 +148,8 @@ class IRType:
     def getBinOpCode(cls, type: str, op: str) -> str:
         if (type, op, type) in cls._binop_code:
             return cls._binop_code[(type, op, type)]
+        elif (cls.getTypeMapInv(type), op, cls.getTypeMapInv(type)) in cls._binop_code:
+            return cls._binop_code[(cls.getTypeMapInv(type), op, cls.getTypeMapInv(type))]
         else:
             raise Exception(f"Operador {op} no soportado para el tipo {type}")
 
@@ -224,7 +242,9 @@ class IRCode:
         self.statement(stmt.andterm, func)
         if stmt.symbol:
             self.statement(stmt.next, func)
-            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            instr = IRInstruction(
+                IRType.getBinOpCode(self.getTypeLastInstr(func), stmt.symbol)
+            )
             func.code.append(instr)
 
     @statement.register
@@ -232,7 +252,9 @@ class IRCode:
         self.statement(stmt.relTerm, func)
         if stmt.symbol:
             self.statement(stmt.next, func)
-            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            instr = IRInstruction(
+                IRType.getBinOpCode(self.getTypeLastInstr(func), stmt.symbol)
+            )
             func.code.append(instr)
 
     @statement.register
@@ -240,7 +262,9 @@ class IRCode:
         self.statement(stmt.addTerm, func)
         if stmt.symbol:
             self.statement(stmt.next, func)
-            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            instr = IRInstruction(
+                IRType.getBinOpCode(self.getTypeLastInstr(func), stmt.symbol)
+            )
             func.code.append(instr)
 
     @statement.register
@@ -248,18 +272,19 @@ class IRCode:
         self.statement(stmt.factor, func)
         if stmt.symbol:
             self.statement(stmt.next, func)
-            instr = IRInstruction(IRType.getBinOpCode("int", stmt.symbol))
+            instr = IRInstruction(
+                IRType.getBinOpCode(self.getTypeLastInstr(func), stmt.symbol)
+            )
             func.code.append(instr)
 
     @statement.register
     def _(self, stmt: Factor, func: IRFunction):
-        if stmt.literal:
-            instr = IRInstruction(IRType.getConst("int"), stmt.literal)
+        if stmt.literal is not None:
+            instr = IRInstruction(IRType.getConst(stmt.type), stmt.literal)
             func.code.append(instr)
             return
 
         if stmt.arguments:
-            print(f"Arguments: {stmt.arguments}")
             for arg in stmt.arguments:
                 self.statement(arg, func)
 
@@ -286,7 +311,7 @@ class IRCode:
 
         if stmt.unary_expression:
             instr = IRInstruction(
-                IRType.getConst("int"),
+                IRType.getConst(stmt.unary_expression.type),
                 f"{stmt.unary_op}{stmt.unary_expression.literal}",
             )
             func.code.append(instr)
@@ -309,7 +334,7 @@ class IRCode:
     @statement.register
     def _(self, stmt: PrintStmt, func: IRFunction):
         self.statement(stmt.expression, func)
-        instr = IRInstruction(IRType.getPrint("int"))
+        instr = IRInstruction(IRType.getPrint(self.getTypeLastInstr(func)))
         func.code.append(instr)
 
     @statement.register
@@ -353,3 +378,18 @@ class IRCode:
     def _(self, stmt: BreakStmt, func: IRFunction):
         instr = IRInstruction("CBREAK")
         func.code.append(instr)
+
+    def getTypeLastInstr(self, func: IRFunction):
+        if len(func.code) == 0:
+            return None
+        var = func.code[-1].args[0] if len(func.code[-1].args) > 0 else "char"
+
+        module = func.module
+
+        if var in module.globals:
+            return module.globals[var].type
+        if var in func.locals:
+            return func.locals[var]
+        if var in func.parmnames:
+            return func.parmtypes[func.parmnames.index(var)]
+        return func.code[-1].opcode[-1]
