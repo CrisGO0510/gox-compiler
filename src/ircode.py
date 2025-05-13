@@ -10,11 +10,12 @@ class IRModule:
         self.globals = {}
 
     def dump(self):
-        print("MODULE:::")
+        output = ["MODULE:::"]
         for glob in self.globals.values():
-            glob.dump()
+            output.append(glob.dump())
         for func in self.functions.values():
-            func.dump()
+            output.append(func.dump())
+        return "\n".join(output)
 
 
 class IRGlobal:
@@ -26,9 +27,9 @@ class IRGlobal:
     def dump(self):
         mapped_type = IRType.getTypeMap(self.type)
         if self.value is not None:
-            print(f"GLOBAL::: {self.name} {mapped_type} {self.value}")
+            return f"GLOBAL::: {self.name} {mapped_type} {self.value}"
         else:
-            print(f"GLOBAL::: {self.name} {mapped_type}")
+            return f"GLOBAL::: {self.name} {mapped_type}"
 
 
 class IRInstruction:
@@ -58,16 +59,23 @@ class IRFunction:
         mapped_parmtypes = [IRType.getTypeMap(t) for t in self.parmtypes]
         mapped_return_type = IRType.getTypeMap(self.return_type)
 
-        print(
-            f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} {mapped_return_type}"
-        )
+        lines = [
+            f"\nFUNCTION::: {self.name}, {self.parmnames}, {mapped_parmtypes} {mapped_return_type}",
+            f"locals: {{"
+        ]
+
         mapped_locals = {
             name: IRType.getTypeMap(type) for name, type in self.locals.items()
         }
 
-        print(f"locals: {mapped_locals}")
+        for k, v in mapped_locals.items():
+            lines.append(f"  {k}: {v}")
+        lines.append("}")
+
         for instr in self.code:
-            print(instr)
+            lines.append(str(instr))
+
+        return "\n".join(lines)
 
 
 class IRType:
