@@ -62,7 +62,7 @@ def ircode_main(AST: Program, filename: str):
     base_name = os.path.splitext(os.path.basename(filename))[0]
     ir_filename = f"./src/ircode-files/{base_name}.ir"
 
-    print("[bold yellow]Código intermedio generado:[/bold yellow]")
+    print("[bold yellow]Código intermedio generado[/bold yellow]")
     ir = IRCode().gencode(AST).dump()
     with open(ir_filename, "w") as f:
         f.write(ir)

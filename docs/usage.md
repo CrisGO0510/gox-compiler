@@ -116,3 +116,56 @@ ValueError: El statement no terminó correctamente. Se esperaba ';'. 10
 El AST generado se guarda automáticamente en el archivo `ast_output.json`.
 
 ---
+
+## 🧠 **Análisis Semántico**
+
+Valida aspectos como:
+
+- Tipos compatibles en asignaciones y operaciones
+
+- Variables declaradas e inicializadas
+
+- Uso correcto de constantes
+
+- Declaración y uso de funciones, retorno esperado, etc.
+
+Ejemplo de errores:
+
+```sh
+    Error en la línea 4: La variable no está inicializada → x
+    Error en la línea 8: La función retorna un tipo diferente al declarado → Tipo esperado: int, tipo encontrado: float
+```
+Si no hay errores, se imprime:
+
+```sh
+✔ Análisis semántico exitoso
+```
+---
+## ⚙️ **Generación de Código Intermedio (IR)**
+
+Si no hay errores semánticos, se genera automáticamente un archivo .ir en src/ircode-files.
+
+```sh
+Código intermedio generado
+```
+
+🔹 Ejemplo de salida IR:
+```sh
+MODULE:::
+
+FUNCTION::: main, [], [] I
+locals: {}
+
+FUNCTION::: mod, [], [] I
+locals: {}
+('CONSTI', 1)
+('CONSTI', 1)
+('EQI',)
+('IF',)
+('CONSTI', 1)
+('RET',)
+('ENDIF',)
+('CONSTI', 0)
+('RET',)
+```
+💾 Archivo generado: src/ircode-files/archivo.ir

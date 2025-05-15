@@ -1,73 +1,16 @@
-FUNCTION::: mod, ['a', 'b'], ['I', 'I'] I
+MODULE:::
+
+FUNCTION::: main, [], [] I
 locals: {}
-('LOCAL_GET', 'a')
-('LOCAL_GET', 'b')
-('LOCAL_GET', 'a')
-('LOCAL_GET', 'b')
-('DIVI',)
-('MULI',)
-('SUBI',)
-('RET',)
 
-FUNCTION::: gcd, ['a', 'b'], ['I', 'I'] I
-locals: {'t': 'I'}
-('LOOP',)
-('LOCAL_GET', 'b')
-('CONSTI', 0)
-('NEI',)
-('CBREAK',)
-
-('LOCAL_GET', 'b')
-('LOCAL_SET', 't')
-
-('LOCAL_GET', 'a')
-('LOCAL_GET', 'b')
-('CALL', 'mod')
-('LOCAL_SET', 'b')
-
-('LOCAL_GET', 't')
-('LOCAL_SET', 'a')
-('ENDLOOP',)
-('LOCAL_GET', 'a')
-('RET',)
-
-FUNCTION::: powmod, ['a', 'x', 'n'], ['I', 'I', 'I'] I
-locals: {'result': 'I'}
+FUNCTION::: mod, [], [] I
+locals: {}
 ('CONSTI', 1)
-('LOCAL_SET', 'result')
-
-('LOOP',)
-('LOCAL_GET', 'x')
-('CONSTI', 0)
-('GTI',)
-('CBREAK',)
-
-('LOCAL_GET', 'x')
-('CONSTI', 2)
-('CALL', 'mod')
 ('CONSTI', 1)
 ('EQI',)
 ('IF',)
-('LOCAL_GET', 'result')
-('LOCAL_GET', 'a')
-('MULI',)
-('LOCAL_GET', 'n')
-('CALL', 'mod')
-('LOCAL_SET', 'result')
+('CONSTI', 1)
+('RET',)
 ('ENDIF',)
-
-('LOCAL_GET', 'a')
-('LOCAL_GET', 'a')
-('MULI',)
-('LOCAL_GET', 'n')
-('CALL', 'mod')
-('LOCAL_SET', 'a')
-
-('LOCAL_GET', 'x')
-('CONSTI', 2)
-('DIVI',)
-('LOCAL_SET', 'x')
-('ENDLOOP',)
-
-('LOCAL_GET', 'result')
+('CONSTI', 0)
 ('RET',)
