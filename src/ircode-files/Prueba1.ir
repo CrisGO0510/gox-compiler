@@ -2,15 +2,20 @@ MODULE:::
 
 FUNCTION::: main, [], [] I
 locals: {}
-
-FUNCTION::: mod, [], [] I
-locals: {}
-('CONSTI', 1)
-('CONSTI', 1)
-('EQI',)
-('IF',)
-('CONSTI', 1)
+('CALL', '_actual_main')
 ('RET',)
-('ENDIF',)
-('CONSTI', 0)
+
+FUNCTION::: _actual_main, [], [] I
+locals: {'i': 'I', 'j': 'I', 'k': 'I'}
+('CONSTI', 4)
+('LOCAL_SET', 'i')
+('CONSTI', 3)
+('LOCAL_SET', 'j')
+('LOCAL_GET', 'i')
+('LOCAL_GET', 'j')
+('ADDI',)
+('LOCAL_SET', 'k')
+('LOCAL_GET', 'i')
+('PRINTI',)
+('LOCAL_GET', 'k')
 ('RET',)
