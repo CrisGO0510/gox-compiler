@@ -157,6 +157,8 @@ class StackMachine:
                 self.stack.append((value_type, a // b))
             elif value_type == "float":
                 self.stack.append((value_type, a / b))
+            else:
+                raise TypeError("DIV requiere enteros o flotantes")
         else:
             raise TypeError("DIV requiere enteros")
 
