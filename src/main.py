@@ -7,6 +7,7 @@ from parser import Program, RecursiveDescentParser
 from serialize import save_to_json_file, to_json
 from check import Checker
 from ircode import IRCode
+from stackMachine import StackMachine
 
 
 def main():
@@ -41,11 +42,10 @@ def main():
     # print("[bold blue]Árbol de sintaxis abstracta (AST):[/bold blue]")
     # print(AST)
 
-    json_output = to_json(AST)
+    # json_output = to_json(AST)
     # print("[bold magenta]JSON generado:[/bold magenta]")
     # print(json_output)
-
-    save_to_json_file(AST, "ast_output.json")
+    # save_to_json_file(AST, "ast_output.json")
 
     try:
         Checker.check(AST)
@@ -62,10 +62,16 @@ def ircode_main(AST: Program, filename: str):
     base_name = os.path.splitext(os.path.basename(filename))[0]
     ir_filename = f"./src/ircode-files/{base_name}.ir"
 
-    print("[bold yellow]Código intermedio generado[/bold yellow]")
     ir = IRCode().gencode(AST).dump()
+    print("[bold yellow]Código intermedio generado[/bold yellow]")
+    call_stack_machine(ir)
     with open(ir_filename, "w") as f:
         f.write(ir)
+
+def call_stack_machine(filename: str):
+    vm = StackMachine()
+    vm.load_module(filename)
+    vm.run("main")
 
 if __name__ == "__main__":
     main()
