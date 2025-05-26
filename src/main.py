@@ -7,7 +7,7 @@ from parser import Program, RecursiveDescentParser
 from serialize import save_to_json_file, to_json
 from check import Checker
 from ircode import IRCode
-from stackMachine import StackMachine
+from stack_machine import StackMachine
 
 
 def main():
@@ -64,9 +64,9 @@ def ircode_main(AST: Program, filename: str):
 
     ir = IRCode().gencode(AST).dump()
     print("[bold yellow]Código intermedio generado[/bold yellow]")
-    call_stack_machine(ir)
     with open(ir_filename, "w") as f:
         f.write(ir)
+    call_stack_machine(ir)
 
 def call_stack_machine(filename: str):
     vm = StackMachine()
