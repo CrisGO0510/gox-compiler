@@ -1,4 +1,5 @@
 import ast, re
+from ircode import IRType
 
 
 # ---------- 1.  Pequeño "loader" de módulos ---------- #
@@ -74,14 +75,18 @@ class StackMachine:
         while self.running and self.pc < len(self.program):
             op, *args = self.program[self.pc]
 
-            # Procesar CONST y PRINT especialmente
-            if op.startswith(("CONST", "PRINT")):
-                base_op = op[:-1]  # Quita la última letra
-                type_suffix = op[-1]  # Obtiene la última letra
+            # Procesar operaciones con sufijo de tipo (I,F,C,B)
+            if len(op) > 1 and op[-1] in ("I", "F", "C", "B"):
+                base_op = op[:-1]
+                type_suffix = op[-1]
                 method = getattr(self, f"op_{base_op}")
-                if op.startswith("CONST"):
+                # Para CONST y PRINT el manejo es especial
+                if base_op == "CONST":
                     method(args[0], type_suffix)
-                else:  # PRINT
+                elif base_op == "PRINT":
+                    method(type_suffix)
+                else:
+                    # Para operaciones como ADDI, SUBI, MULI, DIVI, EQI, etc.
                     method(type_suffix)
             else:
                 # Para el resto de operaciones, comportamiento normal
@@ -116,110 +121,124 @@ class StackMachine:
             self.pc = end_pc
 
     # ─────────────  R E S T O   D E   O P C O D E S  (ejemplos) ─────── #
-    def op_SUBI(self):
+    def op_ADD(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("int", a - b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a + b))
         else:
-            raise TypeError("SUBI requiere enteros")
+            raise TypeError("ADD requiere dos enteros")
 
-    def op_MULI(self):
+    def op_SUB(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("int", a * b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a - b))
         else:
-            raise TypeError("MULI requiere enteros")
+            raise TypeError("SUB requiere enteros")
 
-    def op_DIVI(self):
+    def op_MUL(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("int", a // b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a * b))
         else:
-            raise TypeError("DIVI requiere enteros")
+            raise TypeError("MUL requiere enteros")
 
-    def op_EQI(self):
+    def op_DIV(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("bool", a == b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            if value_type == "int":
+                self.stack.append((value_type, a // b))
+            elif value_type == "float":
+                self.stack.append((value_type, a / b))
         else:
-            raise TypeError("EQI requiere enteros")
+            raise TypeError("DIV requiere enteros")
 
-    def op_GTI(self):
+    def op_EQ(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("bool", a > b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a == b))
         else:
-            raise TypeError("GTI requiere enteros")
+            raise TypeError("EQ requiere enteros")
 
-    def op_LTI(self):
+    def op_GT(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("bool", a < b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a > b))
         else:
-            raise TypeError("LTI requiere enteros")
+            raise TypeError("GT requiere enteros")
 
-    def op_LEI(self):
+    def op_LT(self, suffix_type: str):
         b_t, b = self.stack.pop()
         a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("bool", a <= b))
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a < b))
         else:
-            raise TypeError("LEI requiere enteros")
+            raise TypeError("LT requiere enteros")
+
+    def op_LE(self, suffix_type: str):
+        b_t, b = self.stack.pop()
+        a_t, a = self.stack.pop()
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a <= b))
+        else:
+            raise TypeError("LE requiere enteros")
+
+    def op_NE(self, suffix_type: str):
+        b_t, b = self.stack.pop()
+        a_t, a = self.stack.pop()
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if a_t == b_t == value_type:
+            self.stack.append((value_type, a != b))
+        else:
+            raise TypeError("NE requiere enteros")
+
+    def op_PRINT(self, suffix_type: str):
+        """Imprime el valor del tope de la pila según el tipo especificado"""
+        t, v = self.stack.pop()
+        print(v)
 
     # ---- instrucciones ----
-    def op_CONST(self, value, value_type: str):
+    def op_CONST(self, value, suffix_type: str):
         """Maneja constantes y las agrega al stack con su tipo correcto"""
-        type_map = {
-            "I": "int",  # Integer
-            "F": "float",  # Float
-            "C": "char",  # Char
-            "B": "bool",  # Boolean
-        }
-
         # Mapear el tipo de IR a nuestro tipo interno
-        mapped_type = type_map.get(value_type)
-        if mapped_type is None:
-            raise TypeError(f"Tipo no soportado: {value_type}")
+
+        value_type = IRType.getTypeMapInv(suffix_type)
+        if value_type is None:
+            raise TypeError(f"Tipo no soportado: {suffix_type}")
 
         # Convertir el valor al tipo correspondiente
         parsed_value = None
 
         try:
-            if mapped_type == "int":
+            if value_type == "int":
                 parsed_value = int(value)
-            elif mapped_type == "float":
+            elif value_type == "float":
                 parsed_value = float(value)
-            elif mapped_type == "char":
+            elif value_type == "char":
                 if isinstance(value, int):
                     parsed_value = chr(value)  # Convertir código ASCII a char
                 else:
                     parsed_value = value[0]  # Tomar el primer carácter si es string
-            elif mapped_type == "bool":
+            elif value_type == "bool":
                 parsed_value = bool(value)
 
-            self.stack.append((mapped_type, parsed_value))
+            self.stack.append((value_type, parsed_value))
 
         except (ValueError, TypeError) as e:
-            raise TypeError(f"No se pudo convertir {value} a {mapped_type}: {str(e)}")
-
-    def op_ADDI(self):
-        b_t, b = self.stack.pop()
-        a_t, a = self.stack.pop()
-        if a_t == b_t == "int":
-            self.stack.append(("int", a + b))
-        else:
-            raise TypeError("ADDI requiere dos enteros")
-
-    def op_PRINT(self, value_type: str):
-        """Imprime el valor del tope de la pila según el tipo especificado"""
-        t, v = self.stack.pop()
-        print(v)
+            raise TypeError(f"No se pudo convertir {value} a {value_type}: {str(e)}")
 
     # — locals —
     def op_LOCAL_SET(self, name):
