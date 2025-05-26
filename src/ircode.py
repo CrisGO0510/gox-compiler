@@ -143,7 +143,7 @@ class IRType:
             raise Exception(f"Tipo {type} no soportado")
 
     @classmethod
-    def getPrint(cls, type: str) -> str:
+    def getPrint(cls, type: str | None) -> str:
         if type in cls._typemap:
             return "PRINT" + cls._typemap[type]
         if type in cls._typemap_inv:
@@ -389,7 +389,7 @@ class IRCode:
         instr = IRInstruction("CBREAK")
         func.code.append(instr)
 
-    def getTypeLastInstr(self, func: IRFunction):
+    def getTypeLastInstr(self, func: IRFunction) -> str | None:
         if len(func.code) == 0:
             return None
         var = func.code[-1].args[0] if len(func.code[-1].args) > 0 else "char"
@@ -402,6 +402,12 @@ class IRCode:
             return func.locals[var]
         if var in func.parmnames:
             return func.parmtypes[func.parmnames.index(var)]
+        if func.code[-1].opcode == "CALL":
+            #TODO: error al capturar el tipo de retorno de una función llamada
+            # print(f"Last instruction: {func}")
+            # print(f"Last instruction: {func.return_type}")
+            return func.return_type
+
         return func.code[-1].opcode[-1]
 
     @classmethod
@@ -415,4 +421,4 @@ class IRCode:
         elif type == "char":
             if literal == " ":
                 return ord(" ")
-            return ord(literal[1:-1])
+            return ord(literal[0])
